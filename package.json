@@ -1,0 +1,50 @@
+{
+  "name": "avlumi-desktop",
+  "version": "1.0.0",
+  "description": "Avlumi para computador (Windows)",
+  "author": "Avlumi",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --publish always"
+  },
+  "build": {
+    "appId": "br.adm.mapdecampos.avlumi",
+    "productName": "Avlumi",
+    "artifactName": "Avlumi-Setup-${version}.${ext}",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "build/icon.*"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "deleteAppDataOnUninstall": false,
+      "shortcutName": "Avlumi"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "wallacemapdecampos-ship-it",
+        "repo": "avlumi-app",
+        "releaseType": "release"
+      }
+    ]
+  },
+  "devDependencies": {
+    "electron": "^31.7.6",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  }
+}

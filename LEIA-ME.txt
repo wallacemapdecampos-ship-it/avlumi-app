@@ -1,0 +1,44 @@
+AVLUMI PARA COMPUTADOR (.exe) — COMO FUNCIONA E COMO LANÇAR
+============================================================
+
+O QUE É
+-------
+Um aplicativo de Windows (igual o Discord é por baixo: "Electron").
+Ele é uma "casquinha" que abre o site da Avlumi (comunidade-online.onrender.com).
+
+VANTAGEM IMPORTANTE
+-------------------
+Como o app carrega o site online, TODA novidade que você publica no Render
+aparece na hora dentro do app — SEM precisar reinstalar nada.
+Só o app em si (a casquinha) atualiza de vez em quando, e isso é AUTOMÁTICO.
+
+AUTO-ATUALIZAÇÃO (igual Discord)
+--------------------------------
+Quando você lança uma versão nova do app, quem já tem instalado recebe,
+baixa em segundo plano e instala ao reiniciar — sozinho.
+
+COMO GERAR / LANÇAR O .EXE (sem precisar de PC Windows)
+------------------------------------------------------
+1) No GitHub, abra o repositório -> aba "Actions".
+2) Clique no workflow "Avlumi Desktop (.exe)" -> botão "Run workflow".
+3) Espere ~5 minutos. Ele builda o instalador e publica em "Releases".
+4) Em "Releases" (página do repositório), estará o arquivo:
+   Avlumi-Setup-1.0.0.exe  -> é esse que as pessoas baixam e instalam.
+
+PARA LANÇAR UMA VERSÃO NOVA (atualização)
+-----------------------------------------
+1) Aumente o número "version" em desktop/package.json (ex.: 1.0.0 -> 1.0.1).
+2) Rode o workflow de novo (passo acima).
+   Pronto: quem já tem o app recebe a atualização sozinho.
+
+AVISO DO WINDOWS (editor desconhecido)
+--------------------------------------
+Sem um certificado de assinatura (pago), na 1ª instalação o Windows mostra
+um aviso azul. A pessoa clica em "Mais informações" -> "Executar assim mesmo".
+Dá pra adicionar a assinatura depois (custa ~US$100-400/ano).
+
+TESTAR NO SEU PC (opcional, se tiver Node instalado)
+----------------------------------------------------
+   cd desktop
+   npm install
+   npm start
