@@ -1,18 +1,31 @@
-// Avlumi para computador — "casquinha" (Electron) que abre o site hospedado.
-// Como carrega o site online, toda atualização publicada no Render aparece na hora,
-// sem precisar reinstalar o .exe. Só o app em si atualiza de vez em quando (auto-update).
+// Avlumi para computador — agora com a TELA EMBUTIDA (abre instantâneo, igual Discord).
+// A tela (React) é compilada no GitHub e vai DENTRO do .exe, na pasta "app/".
+// Por isso abre na hora, sem esperar a internet carregar a página.
+// O conteúdo (mensagens, servidores etc.) continua vindo do banco online em tempo real.
+// O app em si se atualiza sozinho de vez em quando (auto-update via GitHub Releases).
 const { app, BrowserWindow, shell, session, desktopCapturer } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 
-// Endereço do site. Se um dia mudar (ex.: avlumi.com), basta trocar aqui e soltar nova versão.
+// Tela embutida (arquivo local). Se um dia faltar (build sem embutir), cai pro site online.
+const LOCAL_INDEX = path.join(__dirname, 'app', 'index.html');
 const SITE = 'https://comunidade-online.onrender.com';
+const fs = require('fs');
+const TEM_LOCAL = fs.existsSync(LOCAL_INDEX);
 
 // Garante uma única instância aberta (clicar de novo foca a janela existente)
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) { app.quit(); }
 
 let win;
+
+function carregarTela() {
+  if (TEM_LOCAL) {
+    win.loadFile(LOCAL_INDEX);
+  } else {
+    win.loadURL(SITE);
+  }
+}
 
 function createWindow() {
   win = new BrowserWindow({
@@ -27,25 +40,26 @@ function createWindow() {
     webPreferences: { contextIsolation: true, nodeIntegration: false },
   });
   win.setMenuBarVisibility(false);
-  win.loadURL(SITE);
+  carregarTela();
 
-  // Links de fora do site abrem no navegador padrão (não dentro do app)
+  // Links externos (que não são a própria tela) abrem no navegador padrão
   win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('file://')) return { action: 'allow' };
     if (url.startsWith(SITE)) return { action: 'allow' };
     shell.openExternal(url);
     return { action: 'deny' };
   });
 
-  // Se cair a internet e a página falhar, tenta de novo em 3s
+  // Se a tela online falhar (só acontece no modo sem embutir), tenta de novo em 3s
   win.webContents.on('did-fail-load', (_e, code) => {
-    if (code !== -3) setTimeout(() => win && win.loadURL(SITE), 3000);
+    if (!TEM_LOCAL && code !== -3) setTimeout(() => win && win.loadURL(SITE), 3000);
   });
 }
 
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 
 app.whenReady().then(() => {
-  // Libera microfone, câmera, compartilhar tela e notificações para o site
+  // Libera microfone, câmera, compartilhar tela e notificações para a tela
   session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) => {
     cb(['media', 'audioCapture', 'videoCapture', 'display-capture', 'notifications',
         'clipboard-read', 'clipboard-sanitized-write', 'fullscreen'].includes(permission));

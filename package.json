@@ -1,6 +1,6 @@
 {
   "name": "avlumi-desktop",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Avlumi para computador (Windows)",
   "author": "Avlumi",
   "main": "main.js",
@@ -18,7 +18,8 @@
     },
     "files": [
       "main.js",
-      "build/icon.*"
+      "build/icon.*",
+      "app/**/*"
     ],
     "win": {
       "target": ["nsis"],

@@ -1,9 +1,10 @@
 name: Build Avlumi (.exe)
 
 # Como lançar / atualizar o app:
-#  1) aumente a "version" em package.json (ex.: 1.0.0 -> 1.0.1)
+#  1) aumente a "version" em package.json (ex.: 1.0.1 -> 1.0.2)
 #  2) aba Actions -> este workflow -> "Run workflow"
-# Ele builda o instalador do Windows e publica em "Releases" (que também é o servidor de auto-update).
+# Ele compila a TELA (do repositório privado comunidade-online), embute no app,
+# gera o instalador do Windows e publica em "Releases" (que também é o auto-update).
 
 on:
   workflow_dispatch:
@@ -16,12 +17,49 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      # 1) Pega este repositório (a "casquinha" do app)
+      - name: Baixar o app
+        uses: actions/checkout@v4
+
+      # 2) Pega a TELA (repositório privado) usando a chave de acesso SRC_TOKEN
+      - name: Baixar a tela (código privado)
+        uses: actions/checkout@v4
+        with:
+          repository: wallacemapdecampos-ship-it/comunidade-online
+          token: ${{ secrets.SRC_TOKEN }}
+          path: tela
+
+      - name: Preparar Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Instalar dependências
+
+      # 3) Compila a tela com caminhos RELATIVOS (--base=./) pra abrir do disco (file://)
+      #    As duas chaves abaixo são PÚBLICAS (já vão no site hoje) — sem risco.
+      - name: Compilar a tela
+        shell: bash
+        working-directory: tela
+        env:
+          VITE_SUPABASE_URL: https://satrygmogomtdvrrtapy.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhdHJ5Z21vZ29tdGR2cnJ0YXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1MDkzNTIsImV4cCI6MjExMDA4NTM1Mn0.PnRRFQRZHyCdRgzN9S7guv5xMKWxa_xcMStyzY8Aqsg
+        run: |
+          npm install
+          npm run build -- --base=./
+
+      # 4) Copia a tela compilada pra dentro do app (pasta "app/")
+      - name: Embutir a tela no app
+        shell: bash
+        run: |
+          rm -rf app
+          mkdir -p app
+          cp -r tela/dist/* app/
+          echo "=== Conteúdo embutido em app/ ==="
+          ls -la app
+
+      # 5) Instala o Electron e gera + publica o instalador
+      - name: Instalar dependências do app
         run: npm install
+
       - name: Build e publicar o instalador
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
