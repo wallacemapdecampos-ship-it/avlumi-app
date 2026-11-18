@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Avlumi — sua comunidade</title>
+<meta name="description" content="Avlumi é a sua comunidade com servidores, canais, voz, câmera, tela e conversas privadas. Use no navegador ou baixe o app para Windows. De graça." />
+<link rel="icon" href="icon.png" />
+<style>
+  :root{
+    --bg:#0c0d1a;
+    --bg2:#121327;
+    --card:rgba(255,255,255,.04);
+    --line:rgba(255,255,255,.09);
+    --txt:#f1f2fb;
+    --muted:#a6a8c9;
+    --blue:#4f7cff;
+    --purple:#9b45ff;
+    --grad:linear-gradient(120deg,#4f7cff,#9b45ff);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+    overflow-x:hidden;
+    position:relative;
+  }
+  /* luzes de fundo */
+  body::before,body::after{
+    content:"";position:fixed;z-index:0;border-radius:50%;
+    filter:blur(90px);opacity:.5;pointer-events:none;
+  }
+  body::before{width:520px;height:520px;background:#4f7cff;top:-180px;left:-120px}
+  body::after{width:520px;height:520px;background:#9b45ff;top:120px;right:-160px}
+  .wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:0 16px}
+
+  header{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px;letter-spacing:.2px}
+  .brand img{width:40px;height:40px;border-radius:12px;display:block}
+  .nav-link{color:var(--muted);text-decoration:none;font-weight:600;font-size:15px}
+  .nav-link:hover{color:var(--txt)}
+
+  .hero{text-align:center;padding:48px 0 24px}
+  .hero h1{
+    font-size:clamp(34px,6vw,60px);line-height:1.05;margin:0 0 18px;font-weight:900;
+    letter-spacing:-.5px;
+  }
+  .hero h1 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{font-size:clamp(16px,2.4vw,20px);color:var(--muted);max-width:620px;margin:0 auto 32px}
+
+  .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;justify-content:center;
+    padding:15px 26px;border-radius:14px;font-weight:700;font-size:16px;
+    text-decoration:none;cursor:pointer;border:1px solid transparent;transition:transform .08s ease,filter .15s ease;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--grad);color:#fff;box-shadow:0 8px 30px rgba(123,78,255,.35)}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-ghost{background:var(--card);color:var(--txt);border-color:var(--line)}
+  .btn-ghost:hover{background:rgba(255,255,255,.08)}
+  .btn svg{width:20px;height:20px}
+  .hint{margin-top:16px;color:var(--muted);font-size:13px}
+
+  .shot{margin:48px auto 0;max-width:900px}
+  .shot .frame{
+    border:1px solid var(--line);border-radius:18px;overflow:hidden;
+    background:var(--bg2);box-shadow:0 30px 80px rgba(0,0,0,.45)
+  }
+  .shot .bar{display:flex;gap:7px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .shot .bar i{width:11px;height:11px;border-radius:50%;background:#3a3c57;display:block}
+  .shot .body{padding:0}
+  .shot iframe{width:100%;height:460px;border:0;display:block;background:var(--bg2)}
+
+  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:56px 0}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .feat .ic{font-size:26px;margin-bottom:10px}
+  .feat h3{margin:0 0 6px;font-size:18px}
+  .feat p{margin:0;color:var(--muted);font-size:14px}
+
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 48px;color:var(--muted);font-size:14px;text-align:center}
+  footer a{color:var(--muted);text-decoration:none;font-weight:600}
+  footer a:hover{color:var(--txt)}
+  .foot-links{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+
+  @media (max-width:560px){
+    .shot iframe{height:380px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand"><img src="icon.png" alt="Avlumi" /> Avlumi</div>
+      <a class="nav-link" href="https://comunidade-online.onrender.com">Entrar no navegador →</a>
+    </header>
+
+    <section class="hero">
+      <h1>Sua <span class="g">comunidade</span>,<br/>do seu jeito.</h1>
+      <p>Servidores, canais, chamadas de voz e vídeo, compartilhar a tela e conversas privadas. Tudo num lugar só — e de graça.</p>
+      <div class="cta">
+        <a class="btn btn-primary" id="dl" href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest/download/Avlumi-Setup.exe">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Baixar para Windows
+        </a>
+        <a class="btn btn-ghost" href="https://comunidade-online.onrender.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>
+          Abrir no navegador
+        </a>
+      </div>
+      <div class="hint">Grátis para Windows · Também funciona no navegador, sem instalar</div>
+    </section>
+
+    <section class="shot">
+      <div class="frame">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <div class="body">
+          <iframe src="https://comunidade-online.onrender.com" title="Prévia da Avlumi" loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feat"><div class="ic">🏠</div><h3>Servidores e canais</h3><p>Monte sua comunidade com canais de texto e voz, do seu jeito.</p></div>
+      <div class="feat"><div class="ic">🎙️</div><h3>Voz, vídeo e tela</h3><p>Converse, ligue a câmera e compartilhe a tela com a galera.</p></div>
+      <div class="feat"><div class="ic">💬</div><h3>Conversas privadas</h3><p>Chame alguém na direta e fale em particular, igual você já conhece.</p></div>
+      <div class="feat"><div class="ic">🛡️</div><h3>Moderação completa</h3><p>Cargos, permissões, filtros automáticos e registro de moderação.</p></div>
+    </section>
+
+    <footer>
+      <div class="foot-links">
+        <a href="https://comunidade-online.onrender.com">Abrir no navegador</a>
+        <a href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest">Todas as versões</a>
+      </div>
+      <div>No primeiro download o Windows pode mostrar um aviso azul — clique em “Mais informações” → “Executar assim mesmo”.</div>
+      <div style="margin-top:10px;opacity:.7">© <span id="y"></span> Avlumi</div>
+    </footer>
+  </div>
+  <script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+</body>
+</html>

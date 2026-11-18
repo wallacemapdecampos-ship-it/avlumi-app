@@ -1,6 +1,6 @@
 {
   "name": "avlumi-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Avlumi para computador (Windows)",
   "author": "Avlumi",
   "main": "main.js",
@@ -11,7 +11,7 @@
   "build": {
     "appId": "br.adm.mapdecampos.avlumi",
     "productName": "Avlumi",
-    "artifactName": "Avlumi-Setup-${version}.${ext}",
+    "artifactName": "Avlumi-Setup.${ext}",
     "directories": {
       "output": "release",
       "buildResources": "build"
