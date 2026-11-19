@@ -79,9 +79,30 @@ let win;
 let splash;
 let urlLocal = null;
 let telaPronta = false;
+let winPronta = false;    // a tela principal terminou de carregar
+let liberadoAbrir = false; // a verificação de atualização já decidiu que pode abrir
+let atualizando = false;   // há uma atualização sendo baixada/instalada agora
 const SPLASH_FILE = path.join(__dirname, 'splash.html');
 const TEM_SPLASH = fs.existsSync(SPLASH_FILE);
 const INICIO = Date.now();
+
+// Escreve um aviso na tela de abertura (ex.: "Baixando atualização… 42%")
+function splashStatus(txt) {
+  if (splash && !splash.isDestroyed()) {
+    splash.webContents.executeJavaScript(`window.setStatus && window.setStatus(${JSON.stringify(txt)})`).catch(() => {});
+  }
+}
+function splashProgress(pct) {
+  if (splash && !splash.isDestroyed()) {
+    splash.webContents.executeJavaScript(`window.setProgress && window.setProgress(${Number(pct) || 0})`).catch(() => {});
+  }
+}
+
+// Abre a tela principal só quando ela estiver pronta E a verificação de atualização liberar
+function tentarAbrir() {
+  if (atualizando) return;           // tem atualização em andamento: segura na splash
+  if (winPronta && liberadoAbrir) mostrarTela();
+}
 
 function enderecoDeCarga() {
   if (TEM_LOCAL && urlLocal) return urlLocal;
@@ -111,7 +132,7 @@ function criarSplash() {
 
 // Fecha a splash e mostra a tela principal (com um tempo mínimo pra não "piscar")
 function mostrarTela() {
-  if (telaPronta) return;
+  if (telaPronta || atualizando) return;
   telaPronta = true;
   const minimo = 900; // ms — garante que a logo apareça por um instante
   const espera = Math.max(0, minimo - (Date.now() - INICIO));
@@ -137,11 +158,12 @@ function createWindow() {
   win.setMenuBarVisibility(false);
   win.loadURL(enderecoDeCarga());
 
-  // Quando a tela principal pintar, troca a splash por ela
-  win.once('ready-to-show', mostrarTela);
-  win.webContents.once('did-finish-load', mostrarTela);
-  // Rede de segurança: se algo travar, mostra a tela de qualquer jeito em 15s
-  setTimeout(mostrarTela, 15000);
+  // Quando a tela principal pintar, marca como pronta e tenta abrir (se a atualização liberar)
+  const marcarPronta = () => { winPronta = true; tentarAbrir(); };
+  win.once('ready-to-show', marcarPronta);
+  win.webContents.once('did-finish-load', marcarPronta);
+  // Rede de segurança: se algo travar, abre a tela de qualquer jeito em 20s (a não ser que esteja atualizando)
+  setTimeout(() => { winPronta = true; liberadoAbrir = true; tentarAbrir(); }, 20000);
 
   // Links que não são da própria tela abrem no navegador padrão
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -183,11 +205,48 @@ app.whenReady().then(async () => {
 
   createWindow();
 
-  // Auto-atualização: checa o GitHub Releases, baixa e instala ao reiniciar (igual Discord)
+  // ===== Atualização ao abrir (igual Discord) =====
+  // Ao abrir, checa o GitHub Releases. Se tiver versão nova: baixa na própria tela de
+  // abertura (mostrando o progresso) e aplica NA HORA, reiniciando já atualizado.
+  // Se não tiver (ou der erro/sem internet), abre o app normalmente.
+  function liberar() { liberadoAbrir = true; tentarAbrir(); }
+
   try {
-    autoUpdater.checkForUpdatesAndNotify();
-    setInterval(() => autoUpdater.checkForUpdatesAndNotify(), 1000 * 60 * 60); // a cada 1 hora
-  } catch (_e) { /* sem rede / em desenvolvimento: ignora */ }
+    autoUpdater.autoDownload = true;          // baixa sozinho quando acha atualização
+    autoUpdater.autoInstallOnAppQuit = true;  // reserva: se abrir sem atualizar, instala ao fechar
+
+    autoUpdater.on('update-available', () => {
+      atualizando = true;                     // segura na splash até terminar
+      splashStatus('Atualização disponível, baixando…');
+      splashProgress(0);
+    });
+    autoUpdater.on('download-progress', (p) => {
+      atualizando = true;
+      splashStatus('Baixando atualização… ' + Math.round(p.percent || 0) + '%');
+      splashProgress(p.percent || 0);
+    });
+    autoUpdater.on('update-downloaded', () => {
+      splashStatus('Instalando atualização…');
+      splashProgress(100);
+      // aplica e reinicia já na versão nova
+      setTimeout(() => { try { autoUpdater.quitAndInstall(true, true); } catch (_e) { atualizando = false; liberar(); } }, 900);
+    });
+    autoUpdater.on('update-not-available', liberar); // já está na versão mais nova → abre
+    autoUpdater.on('error', () => { atualizando = false; liberar(); }); // sem internet/erro → abre mesmo assim
+
+    autoUpdater.checkForUpdates();
+
+    // Se a checagem demorar demais sem achar nada, abre o app (não trava esperando)
+    setTimeout(() => { if (!atualizando) liberar(); }, 9000);
+    // Rede de segurança: se uma atualização travar no meio, desiste e abre em 90s
+    setTimeout(() => { if (atualizando && !telaPronta) { atualizando = false; liberar(); } }, 90000);
+
+    // Enquanto o app estiver aberto, continua checando de hora em hora (instala ao fechar)
+    setInterval(() => { try { autoUpdater.checkForUpdates(); } catch (_e) {} }, 1000 * 60 * 60);
+  } catch (_e) {
+    // em desenvolvimento ou sem configuração de update: só abre o app
+    liberar();
+  }
 
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
