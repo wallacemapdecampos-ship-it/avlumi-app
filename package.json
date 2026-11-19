@@ -1,6 +1,6 @@
 {
   "name": "avlumi-desktop",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Avlumi para computador (Windows)",
   "author": "Avlumi",
   "main": "main.js",
@@ -18,6 +18,7 @@
     },
     "files": [
       "main.js",
+      "splash.html",
       "build/icon.*",
       "app/**/*"
     ],

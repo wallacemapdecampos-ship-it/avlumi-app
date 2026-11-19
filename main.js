@@ -76,11 +76,49 @@ const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) { app.quit(); }
 
 let win;
+let splash;
 let urlLocal = null;
+let telaPronta = false;
+const SPLASH_FILE = path.join(__dirname, 'splash.html');
+const TEM_SPLASH = fs.existsSync(SPLASH_FILE);
+const INICIO = Date.now();
 
 function enderecoDeCarga() {
   if (TEM_LOCAL && urlLocal) return urlLocal;
   return SITE;
+}
+
+// Tela de abertura (igual Discord): aparece instantânea com a logo enquanto a tela principal carrega
+function criarSplash() {
+  if (!TEM_SPLASH) return;
+  splash = new BrowserWindow({
+    width: 380,
+    height: 300,
+    frame: false,
+    resizable: false,
+    movable: true,
+    center: true,
+    show: false,
+    backgroundColor: '#0c0d1a',
+    title: 'Avlumi',
+    icon: path.join(__dirname, 'build', 'icon.png'),
+    skipTaskbar: false,
+    webPreferences: { contextIsolation: true, nodeIntegration: false },
+  });
+  splash.loadFile(SPLASH_FILE);
+  splash.once('ready-to-show', () => splash && splash.show());
+}
+
+// Fecha a splash e mostra a tela principal (com um tempo mínimo pra não "piscar")
+function mostrarTela() {
+  if (telaPronta) return;
+  telaPronta = true;
+  const minimo = 900; // ms — garante que a logo apareça por um instante
+  const espera = Math.max(0, minimo - (Date.now() - INICIO));
+  setTimeout(() => {
+    if (win) { win.show(); win.focus(); }
+    if (splash) { try { splash.destroy(); } catch (_e) {} splash = null; }
+  }, espera);
 }
 
 function createWindow() {
@@ -89,6 +127,7 @@ function createWindow() {
     height: 820,
     minWidth: 900,
     minHeight: 600,
+    show: false, // só aparece quando a tela terminar de carregar (a splash cobre esse tempo)
     backgroundColor: '#0a0b12',
     title: 'Avlumi',
     icon: path.join(__dirname, 'build', 'icon.png'),
@@ -97,6 +136,12 @@ function createWindow() {
   });
   win.setMenuBarVisibility(false);
   win.loadURL(enderecoDeCarga());
+
+  // Quando a tela principal pintar, troca a splash por ela
+  win.once('ready-to-show', mostrarTela);
+  win.webContents.once('did-finish-load', mostrarTela);
+  // Rede de segurança: se algo travar, mostra a tela de qualquer jeito em 15s
+  setTimeout(mostrarTela, 15000);
 
   // Links que não são da própria tela abrem no navegador padrão
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -115,6 +160,9 @@ function createWindow() {
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 
 app.whenReady().then(async () => {
+  // Mostra a tela de abertura IMEDIATAMENTE (igual Discord), antes de qualquer coisa
+  criarSplash();
+
   // Libera microfone, câmera, compartilhar tela e notificações para a tela
   session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) => {
     cb(['media', 'audioCapture', 'videoCapture', 'display-capture', 'notifications',
