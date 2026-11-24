@@ -17,6 +17,35 @@ const APP_DIR = path.join(__dirname, 'app');
 const LOCAL_INDEX = path.join(APP_DIR, 'index.html');
 const TEM_LOCAL = fs.existsSync(LOCAL_INDEX);
 const SITE = 'https://comunidade-online.onrender.com'; // reserva, se não houver tela embutida
+const PORTA_FIXA = 47821; // porta fixa = mesmo "endereço" sempre, então o login fica salvo entre aberturas
+
+// ===== Diário (log) — ajuda a descobrir o que deu errado se a tela ficar preta =====
+// Fica em %APPDATA%\Avlumi\avlumi-log.txt
+let LOG_FILE = null;
+try { LOG_FILE = path.join(app.getPath('userData'), 'avlumi-log.txt'); } catch (_e) {}
+function log(...partes) {
+  const linha = new Date().toISOString() + ' ' + partes.map((p) => (typeof p === 'string' ? p : JSON.stringify(p))).join(' ') + '\n';
+  try {
+    if (!LOG_FILE) return;
+    // mantém o arquivo pequeno
+    if (fs.existsSync(LOG_FILE) && fs.statSync(LOG_FILE).size > 512 * 1024) fs.writeFileSync(LOG_FILE, '');
+    fs.appendFileSync(LOG_FILE, linha);
+  } catch (_e) {}
+}
+const errosDaTela = []; // últimos erros que a tela mostrou no console
+function guardarErro(txt) {
+  errosDaTela.push(String(txt).slice(0, 600));
+  if (errosDaTela.length > 15) errosDaTela.shift();
+  log('[tela]', txt);
+}
+
+// ===== Placa de vídeo: se ela travar (causa clássica de janela preta no Windows), =====
+// a próxima abertura usa o modo sem aceleração de vídeo.
+const FLAG_SEM_GPU = LOG_FILE ? path.join(path.dirname(LOG_FILE), 'sem-gpu.flag') : null;
+if (FLAG_SEM_GPU && fs.existsSync(FLAG_SEM_GPU)) {
+  app.disableHardwareAcceleration();
+  log('abrindo sem aceleração de vídeo (placa de vídeo travou antes)');
+}
 
 const TIPOS = {
   '.html': 'text/html; charset=utf-8',
@@ -50,7 +79,15 @@ function iniciarServidorLocal() {
         let destino = path.join(APP_DIR, path.normalize(urlPath).replace(/^(\.\.[/\\])+/, ''));
         if (!destino.startsWith(APP_DIR)) destino = LOCAL_INDEX;
         if (!fs.existsSync(destino) || fs.statSync(destino).isDirectory()) {
-          // rota desconhecida -> entrega o index (app de página única)
+          // Arquivo (com extensão, ex.: .js/.css) que não existe -> 404 de verdade.
+          // Antes devolvia o index.html no lugar do .js, o que quebrava a tela em silêncio (tela preta).
+          if (path.extname(urlPath)) {
+            log('arquivo não encontrado', urlPath);
+            res.statusCode = 404;
+            res.end('Não encontrado');
+            return;
+          }
+          // rota desconhecida (sem extensão) -> entrega o index (app de página única)
           destino = LOCAL_INDEX;
         }
         const ext = path.extname(destino).toLowerCase();
@@ -62,12 +99,23 @@ function iniciarServidorLocal() {
         res.end('Erro interno');
       }
     });
-    // porta 0 = o sistema escolhe uma livre (evita conflito)
-    server.listen(0, '127.0.0.1', () => {
+    // Tenta a porta fixa (o login fica salvo). Se estiver ocupada, usa qualquer uma livre.
+    let tentouLivre = false;
+    server.on('listening', () => {
       const porta = server.address().port;
+      log('servidor local na porta', porta);
       resolve('http://127.0.0.1:' + porta + '/');
     });
-    server.on('error', () => resolve(null));
+    server.on('error', (err) => {
+      if (!tentouLivre) {
+        tentouLivre = true;
+        log('porta fixa ocupada, usando outra', err && err.code);
+        try { server.listen(0, '127.0.0.1'); return; } catch (_e) {}
+      }
+      log('servidor local falhou', err && err.message);
+      resolve(null);
+    });
+    server.listen(PORTA_FIXA, '127.0.0.1');
   });
 }
 
@@ -104,9 +152,85 @@ function tentarAbrir() {
   if (winPronta && liberadoAbrir) mostrarTela();
 }
 
+let usarOnline = false; // vira true se a tela embutida ficar preta mesmo após limpar o cache
 function enderecoDeCarga() {
-  if (TEM_LOCAL && urlLocal) return urlLocal;
+  if (!usarOnline && TEM_LOCAL && urlLocal) return urlLocal;
   return SITE;
+}
+
+// ===== Detector de tela preta =====
+// Se a tela (React) quebrar, ela some inteira e só sobra o fundo escuro.
+// Depois que a página carrega, conferimos se apareceu algo. Se não apareceu:
+//   1ª vez: limpa o cache/service worker e recarrega
+//   2ª vez: abre a versão online do site
+//   3ª vez: mostra uma tela de ajuda com o erro e botões (em vez de ficar preto)
+let tentativasTelaVazia = 0;
+let mostrandoAjuda = false;
+let timerConferir = null;
+
+function conferirTela() {
+  clearTimeout(timerConferir);
+  timerConferir = setTimeout(async () => {
+    if (!win || win.isDestroyed() || mostrandoAjuda) return;
+    let filhos = -1;
+    try {
+      filhos = await win.webContents.executeJavaScript(
+        "(function(){var r=document.getElementById('root');return r?r.childElementCount:0})()", true);
+    } catch (_e) { filhos = 0; }
+    if (filhos > 0) {
+      if (tentativasTelaVazia) log('tela apareceu depois de', tentativasTelaVazia, 'tentativa(s)');
+      tentativasTelaVazia = 0;
+      return;
+    }
+    tentativasTelaVazia++;
+    log('TELA VAZIA detectada (tentativa ' + tentativasTelaVazia + ') em', win.webContents.getURL(), errosDaTela.slice(-3));
+    winPronta = true; liberadoAbrir = true; tentarAbrir(); // nunca deixa preso na splash
+    if (tentativasTelaVazia === 1) {
+      try { await session.defaultSession.clearStorageData({ storages: ['serviceworkers', 'cachestorage'] }); } catch (_e) {}
+      win.loadURL(enderecoDeCarga());
+    } else if (tentativasTelaVazia === 2 && !usarOnline) {
+      usarOnline = true;
+      win.loadURL(SITE);
+    } else {
+      mostrarAjuda();
+    }
+  }, 8000);
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+// Tela de ajuda (aparece no lugar da tela preta)
+function mostrarAjuda() {
+  if (!win || win.isDestroyed()) return;
+  mostrandoAjuda = true;
+  const erros = errosDaTela.length ? errosDaTela.slice(-5).map(esc).join('<br><br>') : 'Nenhum erro registrado.';
+  const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Avlumi</title>
+<style>body{margin:0;background:#0a0b12;color:#e8e6f5;font-family:Segoe UI,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.c{max-width:560px;padding:32px;text-align:center}h1{font-size:22px;margin:0 0 8px}p{color:#a9a6c4;line-height:1.5}
+a.b{display:inline-block;margin:6px;padding:11px 18px;border-radius:10px;background:#7c5cff;color:#fff;text-decoration:none;font-weight:600}
+a.s{background:#23243a}details{margin-top:22px;text-align:left;color:#8d8aa8;font-size:12px}code{display:block;white-space:pre-wrap;word-break:break-word;margin-top:8px}</style></head>
+<body><div class="c"><h1>A tela da Avlumi não carregou</h1>
+<p>Algo deu errado ao abrir. Tente uma das opções abaixo.</p>
+<a class="b" target="_blank" href="avlumi://tentar">Tentar de novo</a>
+<a class="b s" target="_blank" href="avlumi://online">Abrir versão online</a>
+<a class="b s" target="_blank" href="avlumi://limpar">Limpar dados e tentar (vai pedir login)</a>
+<details><summary>Detalhes do erro (para o suporte)</summary><code>${erros}</code>
+<code>Arquivo de diário: ${esc(LOG_FILE || '')}</code></details></div></body></html>`;
+  win.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html));
+}
+
+async function acaoDaAjuda(acao) {
+  log('ajuda: usuário escolheu', acao);
+  mostrandoAjuda = false;
+  tentativasTelaVazia = 0;
+  if (acao === 'online') usarOnline = true;
+  if (acao === 'tentar') usarOnline = false;
+  if (acao === 'limpar') {
+    usarOnline = false;
+    try { await session.defaultSession.clearStorageData(); } catch (_e) {}
+    try { await session.defaultSession.clearCache(); } catch (_e) {}
+  }
+  if (win && !win.isDestroyed()) win.loadURL(enderecoDeCarga());
 }
 
 // Tela de abertura (igual Discord): aparece instantânea com a logo enquanto a tela principal carrega
@@ -167,21 +291,65 @@ function createWindow() {
 
   // Links que não são da própria tela abrem no navegador padrão
   win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('avlumi://')) { acaoDaAjuda(url.slice('avlumi://'.length).replace(/\/+$/, '')); return { action: 'deny' }; }
     if (url.startsWith('http://127.0.0.1')) return { action: 'allow' };
     if (url.startsWith(SITE)) return { action: 'allow' };
     shell.openExternal(url);
     return { action: 'deny' };
   });
 
-  // Se a página falhar ao carregar, tenta de novo em 3s
-  win.webContents.on('did-fail-load', (_e, code) => {
-    if (code !== -3) setTimeout(() => win && win.loadURL(enderecoDeCarga()), 3000);
+  let falhas = 0;
+  // Cada vez que a tela termina de carregar, confere se ela apareceu de verdade
+  win.webContents.on('did-finish-load', () => {
+    const url = win.webContents.getURL();
+    if (!url.startsWith('data:')) { falhas = 0; conferirTela(); }
+  });
+
+  // Guarda os erros da tela (aparecem na tela de ajuda e no diário)
+  win.webContents.on('console-message', (_e, level, message, line, sourceId) => {
+    if (level >= 3) guardarErro(message + (sourceId ? ' (' + String(sourceId).split('/').pop() + ':' + line + ')' : ''));
+  });
+  win.webContents.on('preload-error', (_e, _p, err) => guardarErro('preload: ' + (err && err.message)));
+
+  // Se a tela travar ou fechar sozinha, recarrega
+  win.webContents.on('render-process-gone', (_e, details) => {
+    log('tela fechou sozinha', details);
+    if (details.reason !== 'clean-exit') setTimeout(() => win && !win.isDestroyed() && win.loadURL(enderecoDeCarga()), 1000);
+  });
+  win.webContents.on('unresponsive', () => log('tela não responde'));
+
+  // Atalhos: F5 / Ctrl+R recarrega, Ctrl+Shift+I abre as ferramentas (para diagnóstico)
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.type !== 'keyDown') return;
+    const k = (input.key || '').toLowerCase();
+    if (k === 'f5' || (input.control && k === 'r')) { event.preventDefault(); mostrandoAjuda = false; win.loadURL(enderecoDeCarga()); }
+    if (input.control && input.shift && k === 'i') { event.preventDefault(); win.webContents.toggleDevTools(); }
+  });
+
+  // Se a página falhar ao carregar, tenta de novo em 3s (até 5 vezes; depois mostra a ajuda)
+  win.webContents.on('did-fail-load', (_e, code, desc, url, isMainFrame) => {
+    if (code === -3 || isMainFrame === false) return; // -3 = carga cancelada (normal)
+    falhas++;
+    log('falha ao carregar', code, desc, url);
+    if (falhas > 5) { guardarErro('Não conseguiu carregar: ' + desc + ' (' + code + ')'); mostrarAjuda(); return; }
+    setTimeout(() => win && !win.isDestroyed() && win.loadURL(enderecoDeCarga()), 3000);
   });
 }
 
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 
+// Placa de vídeo travou → marca para a próxima abertura usar o modo sem aceleração e reinicia
+app.on('child-process-gone', (_e, details) => {
+  log('processo fechou', details);
+  if (details && details.type === 'GPU' && details.reason !== 'clean-exit' && FLAG_SEM_GPU && !fs.existsSync(FLAG_SEM_GPU)) {
+    try { fs.writeFileSync(FLAG_SEM_GPU, new Date().toISOString()); } catch (_e) {}
+    app.relaunch();
+    app.exit(0);
+  }
+});
+
 app.whenReady().then(async () => {
+  log('---- abrindo Avlumi', app.getVersion(), '| tela embutida:', TEM_LOCAL, '| windows', process.getSystemVersion ? process.getSystemVersion() : '');
   // Mostra a tela de abertura IMEDIATAMENTE (igual Discord), antes de qualquer coisa
   criarSplash();
 
