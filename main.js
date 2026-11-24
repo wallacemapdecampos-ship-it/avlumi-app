@@ -420,3 +420,26 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+
+// ===== Login salvo (igual Discord) =====
+// O login fica guardado no armazenamento da tela (endereço fixo 127.0.0.1:47821).
+// Antes de fechar — inclusive quando o app reinicia para atualizar — força gravar
+// tudo no disco, para o Windows não fechar o app antes de o login ser salvo.
+let gravouAoSair = false;
+app.on('before-quit', (e) => {
+  if (gravouAoSair) return;
+  e.preventDefault();
+  gravouAoSair = true;
+  const sair = () => { log('login gravado, fechando'); app.quit(); };
+  try {
+    Promise.resolve(session.defaultSession.flushStorageData())
+      .catch(() => {})
+      .then(() => setTimeout(sair, 150));
+    setTimeout(sair, 2000); // nunca trava o fechamento
+  } catch (_e) { sair(); }
+});
+// e também grava de tempos em tempos (caso o PC desligue de repente)
+app.whenReady().then(() => {
+  setInterval(() => { try { session.defaultSession.flushStorageData(); } catch (_e) {} }, 60 * 1000);
+});
+
