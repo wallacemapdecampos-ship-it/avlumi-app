@@ -290,7 +290,7 @@ function createWindow() {
     show: false, // só aparece quando a tela terminar de carregar (a splash cobre esse tempo)
     backgroundColor: '#0a0b12',
     title: 'Avlumi',
-    icon: path.join(__dirname, 'build', 'icon.png'),
+    icon: caminhoIcone(),
     autoHideMenuBar: true,
     webPreferences: { contextIsolation: true, nodeIntegration: false },
   });
@@ -307,6 +307,7 @@ function createWindow() {
   // Links que não são da própria tela abrem no navegador padrão
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('avlumi://mostrar')) { mostrarJanela(); return { action: 'deny' }; }
+    if (url.startsWith('avlumi://icone/')) { trocarIcone(url.slice('avlumi://icone/'.length).replace(/[^a-z]/g, '')); return { action: 'deny' }; }
     if (url.startsWith('avlumi://')) { acaoDaAjuda(url.slice('avlumi://'.length).replace(/\/+$/, '')); return { action: 'deny' }; }
     if (url.startsWith('http://127.0.0.1')) return { action: 'allow' };
     if (url.startsWith(SITE)) return { action: 'allow' };
@@ -394,9 +395,27 @@ function montarMenuBandeja() {
     { label: 'Sair da Avlumi', click: () => { saindoDeVerdade = true; app.quit(); } },
   ]));
 }
+// ===== Ícone alternativo (Lumen) =====
+function caminhoIcone() {
+  const n = prefs.icone;
+  if (n && /^[a-z]+$/.test(n) && n !== 'roxo') {
+    const p = path.join(__dirname, 'build', 'icones', n + '.png');
+    if (fs.existsSync(p)) return p;
+  }
+  return path.join(__dirname, 'build', 'icon.png');
+}
+function trocarIcone(nome) {
+  if (!nome) return;
+  prefs.icone = nome; salvarPrefs(prefs);
+  const p = caminhoIcone();
+  try { if (win && !win.isDestroyed()) win.setIcon(p); } catch (_e) {}
+  try { if (tray) { let img = nativeImage.createFromPath(p); if (!img.isEmpty()) img = img.resize({ width: 16, height: 16, quality: 'best' }); tray.setImage(img); } } catch (_e) {}
+  log('ícone trocado para', nome);
+}
+
 function criarBandeja() {
   try {
-    let img = nativeImage.createFromPath(path.join(__dirname, 'build', 'icon.png'));
+    let img = nativeImage.createFromPath(caminhoIcone());
     if (!img.isEmpty()) img = img.resize({ width: 16, height: 16, quality: 'best' });
     tray = new Tray(img);
     tray.setToolTip('Avlumi');

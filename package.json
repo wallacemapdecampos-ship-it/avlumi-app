@@ -20,6 +20,7 @@
       "main.js",
       "splash.html",
       "build/icon.*",
+      "build/icones/*.png",
       "app/**/*"
     ],
     "win": {
