@@ -166,7 +166,14 @@ jobs:
 
       # 5) Instala o Electron
       - name: Instalar dependências do app
-        run: npm install
+        shell: bash
+        run: |
+          # o download do Electron às vezes falha por instabilidade (ex.: erro 504): tenta até 3 vezes
+          for t in 1 2 3; do
+            if npm install; then exit 0; fi
+            echo "Falhou (tentativa $t). Tentando de novo em 30s..."; sleep 30
+          done
+          exit 1
 
       # TRAVA 2: abre a tela num Chrome invisível (sem login e com login simulado)
       - name: Testar a tela (evita publicar tela preta)
