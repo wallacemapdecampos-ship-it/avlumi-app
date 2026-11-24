@@ -56,9 +56,21 @@ jobs:
           echo "Última publicada: $TAG | tela=$TELA_PUB app=$APP_PUB"
           echo "Agora:                     tela=$TELA_SHA app=$APP_SHA"
 
+          # Só conta mudança em arquivo que vai para o app (anotações .sql, LEIA-ME, workflow etc. não geram versão)
+          mudou() { # $1=repo  $2=de  $3=para  $4=regex dos arquivos que importam  $5=token
+            [ "$2" = "$3" ] && return 1
+            [ -z "$2" ] && return 0
+            ARQS=$(GH_TOKEN="$5" gh api "repos/$1/compare/$2...$3" --jq '.files[].filename' 2>/dev/null) || return 0
+            echo "$ARQS" | grep -Eq "$4"
+          }
           GERAR=false
           if [ "$EVENTO" = "workflow_dispatch" ]; then GERAR=true; fi
-          if [ "$TELA_SHA" != "$TELA_PUB" ] || [ "$APP_SHA" != "$APP_PUB" ]; then GERAR=true; fi
+          if mudou wallacemapdecampos-ship-it/comunidade-online "$TELA_PUB" "$TELA_SHA" '^(src/|public/|index\.html$|package(-lock)?\.json$|vite\.config)' "$SRC_TOKEN"; then
+            echo "A tela mudou."; GERAR=true
+          fi
+          if mudou "$GITHUB_REPOSITORY" "$APP_PUB" "$APP_SHA" '^(main\.js$|splash\.html$|package\.json$|build/)' "$GH_TOKEN"; then
+            echo "O app mudou."; GERAR=true
+          fi
 
           # próxima versão: maior entre (última publicada + 1) e a do package.json
           ULT=${TAG#v}; IFS=. read -r MA MI PA <<< "$ULT"
