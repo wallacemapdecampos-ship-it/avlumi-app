@@ -7,7 +7,7 @@
 //      (Cloudflare Turnstile) funciona — ela sempre libera localhost/127.0.0.1.
 // O conteúdo (mensagens, servidores etc.) continua vindo do banco online em tempo real.
 // O app se atualiza sozinho de vez em quando (auto-update via GitHub Releases).
-const { app, BrowserWindow, shell, session, desktopCapturer } = require('electron');
+const { app, BrowserWindow, shell, session, desktopCapturer, Tray, Menu, nativeImage, Notification } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
@@ -42,6 +42,21 @@ function guardarErro(txt) {
 // ===== Placa de vídeo: se ela travar (causa clássica de janela preta no Windows), =====
 // a próxima abertura usa o modo sem aceleração de vídeo.
 const FLAG_SEM_GPU = LOG_FILE ? path.join(path.dirname(LOG_FILE), 'sem-gpu.flag') : null;
+
+// ===== Preferências (perto do relógio / iniciar com o Windows) =====
+const PREFS_FILE = LOG_FILE ? path.join(path.dirname(LOG_FILE), 'preferencias.json') : null;
+function lerPrefs() {
+  try { return JSON.parse(fs.readFileSync(PREFS_FILE, 'utf8')); } catch (_e) { return {}; }
+}
+function salvarPrefs(p) {
+  try { fs.writeFileSync(PREFS_FILE, JSON.stringify(p, null, 2)); } catch (_e) {}
+}
+let prefs = lerPrefs();
+if (prefs.fecharParaBandeja === undefined) prefs.fecharParaBandeja = true; // igual Discord
+// aberto pelo Windows ao ligar o PC -> começa escondido perto do relógio
+const ABRIU_OCULTO = process.argv.includes('--oculto');
+let saindoDeVerdade = false; // true = o usuário escolheu "Sair" (ou o app vai reiniciar para atualizar)
+let tray = null;
 if (FLAG_SEM_GPU && fs.existsSync(FLAG_SEM_GPU)) {
   app.disableHardwareAcceleration();
   log('abrindo sem aceleração de vídeo (placa de vídeo travou antes)');
@@ -235,7 +250,7 @@ async function acaoDaAjuda(acao) {
 
 // Tela de abertura (igual Discord): aparece instantânea com a logo enquanto a tela principal carrega
 function criarSplash() {
-  if (!TEM_SPLASH) return;
+  if (!TEM_SPLASH || ABRIU_OCULTO) return;
   splash = new BrowserWindow({
     width: 380,
     height: 300,
@@ -261,7 +276,7 @@ function mostrarTela() {
   const minimo = 900; // ms — garante que a logo apareça por um instante
   const espera = Math.max(0, minimo - (Date.now() - INICIO));
   setTimeout(() => {
-    if (win) { win.show(); win.focus(); }
+    if (win && !ABRIU_OCULTO) { win.show(); win.focus(); }
     if (splash) { try { splash.destroy(); } catch (_e) {} splash = null; }
   }, espera);
 }
@@ -291,6 +306,7 @@ function createWindow() {
 
   // Links que não são da própria tela abrem no navegador padrão
   win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('avlumi://mostrar')) { mostrarJanela(); return { action: 'deny' }; }
     if (url.startsWith('avlumi://')) { acaoDaAjuda(url.slice('avlumi://'.length).replace(/\/+$/, '')); return { action: 'deny' }; }
     if (url.startsWith('http://127.0.0.1')) return { action: 'allow' };
     if (url.startsWith(SITE)) return { action: 'allow' };
@@ -299,6 +315,19 @@ function createWindow() {
   });
 
   let falhas = 0;
+  // Fechar a janela = esconder perto do relógio (igual Discord). Continua recebendo mensagens.
+  win.on('close', (e) => {
+    if (saindoDeVerdade || !prefs.fecharParaBandeja || !tray) return;
+    e.preventDefault();
+    win.hide();
+    if (!prefs.avisouBandeja) {
+      prefs.avisouBandeja = true; salvarPrefs(prefs);
+      try {
+        if (Notification.isSupported()) new Notification({ title: 'A Avlumi continua aberta', body: 'Ela fica aqui perto do relógio para você receber as mensagens. Para fechar de vez: clique com o botão direito no ícone → Sair.', icon: path.join(__dirname, 'build', 'icon.png') }).show();
+      } catch (_e) {}
+    }
+  });
+
   // Cada vez que a tela termina de carregar, confere se ela apareceu de verdade
   win.webContents.on('did-finish-load', () => {
     const url = win.webContents.getURL();
@@ -336,7 +365,46 @@ function createWindow() {
   });
 }
 
-app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
+app.on('second-instance', () => mostrarJanela());
+
+function mostrarJanela() {
+  if (!win || win.isDestroyed()) return;
+  if (win.isMinimized()) win.restore();
+  win.show();
+  win.focus();
+}
+
+// ===== Ícone perto do relógio (bandeja do Windows) =====
+function iniciarComWindows() {
+  try { return app.getLoginItemSettings({ args: ['--oculto'] }).openAtLogin; } catch (_e) { return false; }
+}
+function definirIniciarComWindows(ligar) {
+  try { app.setLoginItemSettings({ openAtLogin: !!ligar, args: ['--oculto'] }); } catch (_e) {}
+  prefs.iniciarComWindows = !!ligar; salvarPrefs(prefs);
+  log('iniciar com o Windows:', !!ligar);
+}
+function montarMenuBandeja() {
+  if (!tray) return;
+  tray.setContextMenu(Menu.buildFromTemplate([
+    { label: 'Abrir a Avlumi', click: mostrarJanela },
+    { type: 'separator' },
+    { label: 'Iniciar junto com o Windows', type: 'checkbox', checked: iniciarComWindows(), click: (it) => { definirIniciarComWindows(it.checked); montarMenuBandeja(); } },
+    { label: 'Fechar a janela deixa a Avlumi aqui', type: 'checkbox', checked: !!prefs.fecharParaBandeja, click: (it) => { prefs.fecharParaBandeja = it.checked; salvarPrefs(prefs); } },
+    { type: 'separator' },
+    { label: 'Sair da Avlumi', click: () => { saindoDeVerdade = true; app.quit(); } },
+  ]));
+}
+function criarBandeja() {
+  try {
+    let img = nativeImage.createFromPath(path.join(__dirname, 'build', 'icon.png'));
+    if (!img.isEmpty()) img = img.resize({ width: 16, height: 16, quality: 'best' });
+    tray = new Tray(img);
+    tray.setToolTip('Avlumi');
+    tray.on('click', mostrarJanela);
+    tray.on('double-click', mostrarJanela);
+    montarMenuBandeja();
+  } catch (e) { log('bandeja falhou', e && e.message); tray = null; }
+}
 
 // Placa de vídeo travou → marca para a próxima abertura usar o modo sem aceleração e reinicia
 app.on('child-process-gone', (_e, details) => {
@@ -352,6 +420,9 @@ app.whenReady().then(async () => {
   log('---- abrindo Avlumi', app.getVersion(), '| tela embutida:', TEM_LOCAL, '| windows', process.getSystemVersion ? process.getSystemVersion() : '');
   // Mostra a tela de abertura IMEDIATAMENTE (igual Discord), antes de qualquer coisa
   criarSplash();
+  criarBandeja();
+  // 1ª vez: já deixa "iniciar junto com o Windows" ligado (igual Discord). Dá pra desligar no ícone.
+  if (prefs.iniciarComWindows === undefined && app.isPackaged) { definirIniciarComWindows(true); montarMenuBandeja(); }
 
   // Libera microfone, câmera, compartilhar tela e notificações para a tela
   session.defaultSession.setPermissionRequestHandler((_wc, permission, cb) => {
@@ -427,6 +498,7 @@ app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(
 // tudo no disco, para o Windows não fechar o app antes de o login ser salvo.
 let gravouAoSair = false;
 app.on('before-quit', (e) => {
+  saindoDeVerdade = true; // deixa a janela fechar de verdade (Sair, ou reiniciar para atualizar)
   if (gravouAoSair) return;
   e.preventDefault();
   gravouAoSair = true;

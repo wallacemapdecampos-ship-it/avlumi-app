@@ -1,18 +1,114 @@
 name: Build Avlumi (.exe)
 
-# Como lançar / atualizar o app:
-#  1) aumente a "version" em package.json (ex.: 1.0.1 -> 1.0.2)
-#  2) aba Actions -> este workflow -> "Run workflow"
-# Ele compila a TELA (do repositório privado comunidade-online), embute no app,
-# gera o instalador do Windows e publica em "Releases" (que também é o auto-update).
+# TUDO AUTOMÁTICO:
+#  - De hora em hora o GitHub confere se o código da TELA (repositório comunidade-online)
+#    ou deste app mudou desde a última versão publicada. Se mudou, gera e publica sozinho.
+#  - Também roda quando você muda algo neste repositório (main.js, splash etc.).
+#  - O número da versão sobe sozinho (1.0.16 -> 1.0.17 ...). Não precisa mexer no package.json.
+#  - Ainda dá para rodar na mão: aba Actions -> este workflow -> "Run workflow".
+#
+# Antes de publicar, duas travas de segurança (se qualquer uma falhar, NADA é publicado):
+#  1) Verificador de erros no código da tela (pega o tipo de erro que causou a tela preta)
+#  2) Teste abrindo a tela num Chrome invisível, sem login e com login simulado
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'   # de hora em hora, no minuto 17
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: ['main.js', 'splash.html', 'package.json', 'build/**', 'scripts/**', '.github/workflows/release.yml']
+
+concurrency:
+  group: build-avlumi
+  cancel-in-progress: false
 
 jobs:
+  # ---------- 1) Precisa gerar versão nova? + verificador de erros ----------
+  verificar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      gerar: ${{ steps.decidir.outputs.gerar }}
+      versao: ${{ steps.decidir.outputs.versao }}
+      tela_sha: ${{ steps.decidir.outputs.tela_sha }}
+    steps:
+      - name: Baixar o app
+        uses: actions/checkout@v4
+
+      - name: Decidir se precisa publicar
+        id: decidir
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SRC_TOKEN: ${{ secrets.SRC_TOKEN }}
+          EVENTO: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          TELA_SHA=$(GH_TOKEN="$SRC_TOKEN" gh api repos/wallacemapdecampos-ship-it/comunidade-online/commits/main --jq .sha)
+          APP_SHA="${GITHUB_SHA}"
+          ULTIMA=$(gh api "repos/${GITHUB_REPOSITORY}/releases/latest" 2>/dev/null || echo '{}')
+          TAG=$(echo "$ULTIMA" | jq -r '.tag_name // "v0.0.0"')
+          NOTAS=$(echo "$ULTIMA" | jq -r '.body // ""')
+          TELA_PUB=$(echo "$NOTAS" | sed -n 's/^tela: *\([0-9a-f]\{7,40\}\).*/\1/p' | head -1)
+          APP_PUB=$(echo "$NOTAS" | sed -n 's/^app: *\([0-9a-f]\{7,40\}\).*/\1/p' | head -1)
+          echo "Última publicada: $TAG | tela=$TELA_PUB app=$APP_PUB"
+          echo "Agora:                     tela=$TELA_SHA app=$APP_SHA"
+
+          GERAR=false
+          if [ "$EVENTO" = "workflow_dispatch" ]; then GERAR=true; fi
+          if [ "$TELA_SHA" != "$TELA_PUB" ] || [ "$APP_SHA" != "$APP_PUB" ]; then GERAR=true; fi
+
+          # próxima versão: maior entre (última publicada + 1) e a do package.json
+          ULT=${TAG#v}; IFS=. read -r MA MI PA <<< "$ULT"
+          PROX="$MA.$MI.$((PA+1))"
+          PKG=$(jq -r .version package.json)
+          VERSAO=$(printf '%s\n%s\n' "$PROX" "$PKG" | sort -V | tail -1)
+
+          echo "Gerar nova versão? $GERAR  ->  $VERSAO"
+          {
+            echo "gerar=$GERAR"
+            echo "versao=$VERSAO"
+            echo "tela_sha=$TELA_SHA"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Baixar a tela (código privado)
+        if: steps.decidir.outputs.gerar == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: wallacemapdecampos-ship-it/comunidade-online
+          token: ${{ secrets.SRC_TOKEN }}
+          ref: ${{ steps.decidir.outputs.tela_sha }}
+          path: tela
+
+      - name: Preparar Node
+        if: steps.decidir.outputs.gerar == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # TRAVA 1: verificador de erros (ex.: usar variável antes de ela existir = tela preta)
+      - name: Verificar erros no código da tela
+        if: steps.decidir.outputs.gerar == 'true'
+        shell: bash
+        run: |
+          mkdir -p lint && cd lint
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund eslint@9 globals@15 > /dev/null
+          cp ../scripts/eslint.config.mjs .
+          cp -r ../tela/src ./src
+          if ! npx eslint -c eslint.config.mjs --quiet src; then
+            echo ""
+            echo "❌ O verificador achou erros no código da tela (veja acima). O app NÃO será publicado."
+            exit 1
+          fi
+          echo "✅ Código da tela sem erros."
+
+  # ---------- 2) Gerar, testar e publicar o instalador ----------
   build-windows:
+    needs: verificar
+    if: needs.verificar.outputs.gerar == 'true'
     runs-on: windows-latest
     permissions:
       contents: write
@@ -21,12 +117,13 @@ jobs:
       - name: Baixar o app
         uses: actions/checkout@v4
 
-      # 2) Pega a TELA (repositório privado) usando a chave de acesso SRC_TOKEN
+      # 2) Pega a TELA (repositório privado) na MESMA versão que passou no verificador
       - name: Baixar a tela (código privado)
         uses: actions/checkout@v4
         with:
           repository: wallacemapdecampos-ship-it/comunidade-online
           token: ${{ secrets.SRC_TOKEN }}
+          ref: ${{ needs.verificar.outputs.tela_sha }}
           path: tela
 
       - name: Preparar Node
@@ -34,7 +131,7 @@ jobs:
         with:
           node-version: 20
 
-      # 3) Compila a tela com caminhos RELATIVOS (--base=./) pra abrir do disco (file://)
+      # 3) Compila a tela com caminhos RELATIVOS (--base=./)
       #    As duas chaves abaixo são PÚBLICAS (já vão no site hoje) — sem risco.
       - name: Compilar a tela
         shell: bash
@@ -53,15 +150,13 @@ jobs:
           rm -rf app
           mkdir -p app
           cp -r tela/dist/* app/
-          echo "=== Conteúdo embutido em app/ ==="
           ls -la app
 
-      # 5) Instala o Electron e gera + publica o instalador
+      # 5) Instala o Electron
       - name: Instalar dependências do app
         run: npm install
 
-      # 5b) TESTE: abre a tela num Chrome invisível (sem login e com login simulado).
-      #     Se a tela quebrar (tela preta), o build para aqui e NADA é publicado.
+      # TRAVA 2: abre a tela num Chrome invisível (sem login e com login simulado)
       - name: Testar a tela (evita publicar tela preta)
         shell: bash
         env:
@@ -70,7 +165,22 @@ jobs:
           npm install --no-save puppeteer-core@23
           node scripts/teste-tela.mjs app
 
+      # 6) Número da versão automático
+      - name: Definir versão ${{ needs.verificar.outputs.versao }}
+        shell: bash
+        run: npm version "${{ needs.verificar.outputs.versao }}" --no-git-tag-version --allow-same-version
+
+      # 7) Gera e publica (Releases = auto-update dos usuários)
       - name: Build e publicar o instalador
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run dist
+
+      # 8) Anota na versão qual código foi usado (é assim que a próxima checagem sabe se mudou)
+      - name: Anotar versão publicada
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release edit "v${{ needs.verificar.outputs.versao }}" --repo "${GITHUB_REPOSITORY}" \
+            --notes "$(printf 'Gerada automaticamente.\n\ntela: %s\napp: %s\n' '${{ needs.verificar.outputs.tela_sha }}' "${GITHUB_SHA}")"
