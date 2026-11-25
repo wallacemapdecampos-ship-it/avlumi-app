@@ -23,6 +23,8 @@
       "build/icones/*.png",
       "app/**/*"
     ],
+    "npmRebuild": false,
+    "asarUnpack": ["node_modules/uiohook-napi/**"],
     "win": {
       "target": ["nsis"],
       "icon": "build/icon.png"
@@ -49,5 +51,8 @@
   },
   "dependencies": {
     "electron-updater": "^6.3.9"
+  },
+  "optionalDependencies": {
+    "uiohook-napi": "^1.5.4"
   }
 }

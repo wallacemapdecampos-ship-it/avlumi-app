@@ -7,7 +7,8 @@
 //      (Cloudflare Turnstile) funciona — ela sempre libera localhost/127.0.0.1.
 // O conteúdo (mensagens, servidores etc.) continua vindo do banco online em tempo real.
 // O app se atualiza sozinho de vez em quando (auto-update via GitHub Releases).
-const { app, BrowserWindow, shell, session, desktopCapturer, Tray, Menu, nativeImage, Notification } = require('electron');
+const { app, BrowserWindow, shell, session, desktopCapturer, Tray, Menu, nativeImage, Notification, globalShortcut } = require('electron');
+const { execFile } = require('child_process');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
@@ -308,6 +309,8 @@ function createWindow() {
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('avlumi://mostrar')) { mostrarJanela(); return { action: 'deny' }; }
     if (url.startsWith('avlumi://icone/')) { trocarIcone(url.slice('avlumi://icone/'.length).replace(/[^a-z]/g, '')); return { action: 'deny' }; }
+    if (url.startsWith('avlumi://ptt/')) { comandoPtt(url.slice('avlumi://ptt/'.length)); return { action: 'deny' }; }
+    if (url.startsWith('avlumi://jogos/')) { detectarJogos = url.endsWith('/ligar'); if (detectarJogos) { jogoAtual = undefined; checarJogos(); } else if (jogoAtual) { jogoAtual = null; avisarTela('avlumi-jogo', { jogo: null }); } return { action: 'deny' }; }
     if (url.startsWith('avlumi://')) { acaoDaAjuda(url.slice('avlumi://'.length).replace(/\/+$/, '')); return { action: 'deny' }; }
     if (url.startsWith('http://127.0.0.1')) return { action: 'allow' };
     if (url.startsWith(SITE)) return { action: 'allow' };
@@ -333,6 +336,8 @@ function createWindow() {
   win.webContents.on('did-finish-load', () => {
     const url = win.webContents.getURL();
     if (!url.startsWith('data:')) { falhas = 0; conferirTela(); }
+    // a tela recarregou: avisa de novo o jogo aberto
+    if (jogoAtual) setTimeout(() => avisarTela('avlumi-jogo', { jogo: jogoAtual }), 4000);
   });
 
   // Guarda os erros da tela (aparecem na tela de ajuda e no diário)
@@ -534,3 +539,89 @@ app.whenReady().then(() => {
   setInterval(() => { try { session.defaultSession.flushStorageData(); } catch (_e) {} }, 60 * 1000);
 });
 
+// ===== Avisos do app para a tela =====
+function avisarTela(evento, detalhe) {
+  try {
+    if (win && !win.isDestroyed()) {
+      win.webContents.executeJavaScript(`window.dispatchEvent(new CustomEvent(${JSON.stringify(evento)}, { detail: ${JSON.stringify(detalhe || {})} }))`).catch(() => {});
+    }
+  } catch (_e) {}
+}
+
+// ===== "Jogando agora": olha os programas abertos e reconhece jogos conhecidos =====
+const JOGOS = {
+  'valorant-win64-shipping.exe': 'VALORANT', 'fortniteclient-win64-shipping.exe': 'Fortnite', 'robloxplayerbeta.exe': 'Roblox',
+  'minecraft.windows.exe': 'Minecraft', 'minecraftlauncher.exe': 'Minecraft', 'gta5.exe': 'GTA V', 'gta5_enhanced.exe': 'GTA V',
+  'league of legends.exe': 'League of Legends', 'cs2.exe': 'Counter-Strike 2', 'csgo.exe': 'Counter-Strike', 'r5apex.exe': 'Apex Legends',
+  'r5apex_dx12.exe': 'Apex Legends', 'overwatch.exe': 'Overwatch 2', 'dota2.exe': 'Dota 2', 'rocketleague.exe': 'Rocket League',
+  'fallguys_client_game.exe': 'Fall Guys', 'among us.exe': 'Among Us', 'eldenring.exe': 'Elden Ring', 'cyberpunk2077.exe': 'Cyberpunk 2077',
+  'fc25.exe': 'EA SPORTS FC 25', 'fc24.exe': 'EA SPORTS FC 24', 'fc26.exe': 'EA SPORTS FC 26', 'rdr2.exe': 'Red Dead Redemption 2',
+  'cod.exe': 'Call of Duty', 'cod24-cod.exe': 'Call of Duty', 'modernwarfare.exe': 'Call of Duty', 'pubg-win64-shipping.exe': 'PUBG',
+  'tslgame.exe': 'PUBG', 'rainbowsix.exe': 'Rainbow Six Siege', 'rainbowsix_be.exe': 'Rainbow Six Siege', 'deadbydaylight-win64-shipping.exe': 'Dead by Daylight',
+  'terraria.exe': 'Terraria', 'stardew valley.exe': 'Stardew Valley', 'hollow_knight.exe': 'Hollow Knight', 'genshinimpact.exe': 'Genshin Impact',
+  'zenlesszonezero.exe': 'Zenless Zone Zero', 'starrail.exe': 'Honkai: Star Rail', 'wutheringwaves.exe': 'Wuthering Waves', 'marvel-win64-shipping.exe': 'Marvel Rivals',
+  'helldivers2.exe': 'Helldivers 2', 'palworld-win64-shipping.exe': 'Palworld', 'rust.exe': 'Rust', 'destiny2.exe': 'Destiny 2',
+  'warframe.x64.exe': 'Warframe', 'thefinals.exe': 'THE FINALS', 'hd-player.exe': 'BlueStacks', 'osu!.exe': 'osu!', 'wow.exe': 'World of Warcraft',
+  'pathofexile_x64.exe': 'Path of Exile', 'phasmophobia.exe': 'Phasmophobia', 'lethal company.exe': 'Lethal Company', 'sims4.exe': 'The Sims 4',
+  'forzahorizon5.exe': 'Forza Horizon 5', 'blackops6.exe': 'Call of Duty: Black Ops 6', 'cs2_launcher.exe': 'Counter-Strike 2', 'brawlhalla.exe': 'Brawlhalla',
+};
+let detectarJogos = true;
+let jogoAtual = null;
+function checarJogos() {
+  if (process.platform !== 'win32' || !detectarJogos) return;
+  execFile('tasklist', ['/fo', 'csv', '/nh'], { windowsHide: true, maxBuffer: 8 * 1024 * 1024 }, (err, out) => {
+    if (err || !detectarJogos) return;
+    const abertos = new Set(String(out).split(/\r?\n/).map(l => (l.split('","')[0] || '').replace(/^"/, '').toLowerCase()).filter(Boolean));
+    let achado = null;
+    for (const [exe, nome] of Object.entries(JOGOS)) { if (abertos.has(exe)) { achado = nome; break; } }
+    if (achado !== jogoAtual) { jogoAtual = achado; log('jogando agora:', achado || '(nada)'); avisarTela('avlumi-jogo', { jogo: achado }); }
+  });
+}
+app.whenReady().then(() => {
+  setTimeout(checarJogos, 15000);
+  setInterval(checarJogos, 30000);
+});
+
+// ===== Atalhos globais (funcionam mesmo dentro do jogo) =====
+// Ctrl+Shift+M liga/desliga o microfone; "apertar para falar" usa uma tecla escolhida (precisa do uiohook-napi)
+let uio = null;
+let pttCodigo = null;   // { tipo: 'tecla'|'mouse', codigo }
+let pttApertado = false;
+function soltarPtt() { if (pttApertado) { pttApertado = false; avisarTela('avlumi-ptt', { down: false }); } }
+function iniciarGancho() {
+  if (uio) return true;
+  try {
+    const m = require('uiohook-napi');
+    uio = m;
+    m.uIOhook.on('keydown', (e) => { if (pttCodigo?.tipo === 'tecla' && e.keycode === pttCodigo.codigo && !pttApertado && !(win && win.isFocused())) { pttApertado = true; avisarTela('avlumi-ptt', { down: true }); } });
+    m.uIOhook.on('keyup', (e) => { if (pttCodigo?.tipo === 'tecla' && e.keycode === pttCodigo.codigo) soltarPtt(); });
+    m.uIOhook.on('mousedown', (e) => { if (pttCodigo?.tipo === 'mouse' && e.button === pttCodigo.codigo && !pttApertado) { pttApertado = true; avisarTela('avlumi-ptt', { down: true }); } });
+    m.uIOhook.on('mouseup', (e) => { if (pttCodigo?.tipo === 'mouse' && e.button === pttCodigo.codigo) soltarPtt(); });
+    m.uIOhook.start();
+    log('atalho global: gancho ligado');
+    return true;
+  } catch (e) {
+    log('atalho global indisponível:', e && e.message);
+    uio = null;
+    return false;
+  }
+}
+function comandoPtt(arg) {
+  const [acao, tecla] = String(arg || '').split('/');
+  if (acao === 'desligar') { pttCodigo = null; soltarPtt(); return; }
+  if (acao !== 'ligar' || !tecla) return;
+  if (!iniciarGancho()) { avisarTela('avlumi-ptt-erro', {}); return; }
+  const K = uio.UiohookKey || {};
+  const mapa = { V: ['tecla', K.V], B: ['tecla', K.B], CapsLock: ['tecla', K.CapsLock], Crase: ['tecla', K.Backquote], AltDireito: ['tecla', K.AltRight], CtrlDireito: ['tecla', K.CtrlRight], Mouse4: ['mouse', 4], Mouse5: ['mouse', 5] };
+  const v = mapa[tecla];
+  if (!v || v[1] === undefined) return;
+  pttCodigo = { tipo: v[0], codigo: v[1] };
+  log('apertar para falar global:', tecla);
+}
+app.whenReady().then(() => {
+  try { globalShortcut.register('CommandOrControl+Shift+M', () => avisarTela('avlumi-mutar', {})); } catch (_e) {}
+});
+app.on('will-quit', () => {
+  try { globalShortcut.unregisterAll(); } catch (_e) {}
+  try { if (uio) uio.uIOhook.stop(); } catch (_e) {}
+});
