@@ -193,7 +193,14 @@ jobs:
       - name: Build e publicar o instalador
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run dist
+        shell: bash
+        # o GitHub às vezes responde 504 na hora de publicar; tenta de novo até 3 vezes
+        run: |
+          for i in 1 2 3; do
+            if npm run dist; then exit 0; fi
+            echo "Falhou (tentativa $i). Tentando de novo em 40s..."; sleep 40
+          done
+          exit 1
 
       # 8) Anota na versão qual código foi usado (é assim que a próxima checagem sabe se mudou)
       - name: Anotar versão publicada
