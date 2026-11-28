@@ -3,142 +3,464 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Avlumi — sua comunidade</title>
-<meta name="description" content="Avlumi é a sua comunidade com servidores, canais, voz, câmera, tela e conversas privadas. Use no navegador ou baixe o app para Windows. De graça." />
+<title>Avlumi — Sua comunidade. Seu mundo.</title>
+<meta name="description" content="Avlumi é a plataforma de comunidades com servidores, canais, chamadas de voz e vídeo, compartilhamento de tela e conversas privadas. Use no navegador ou baixe o app para Windows. Grátis para começar." />
+<meta name="theme-color" content="#080B1B" />
 <link rel="icon" href="icon.png" />
+<link rel="canonical" href="https://avlumi.onrender.com/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Avlumi — Sua comunidade. Seu mundo." />
+<meta property="og:description" content="Converse, jogue e crie comunidades com servidores, voz, vídeo e conversas privadas. Grátis para começar." />
+<meta property="og:image" content="https://avlumi.onrender.com/og.jpg" />
+<meta property="og:url" content="https://avlumi.onrender.com/" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="preload" as="image" href="hero.webp" imagesrcset="hero-640.webp 640w, hero.webp 1020w" imagesizes="(max-width: 900px) 100vw, 56vw" />
 <style>
+  /* ===== Tokens de design ===== */
   :root{
-    --bg:#0c0d1a;
-    --bg2:#121327;
-    --card:rgba(255,255,255,.04);
-    --line:rgba(255,255,255,.09);
-    --txt:#f1f2fb;
-    --muted:#a6a8c9;
-    --blue:#4f7cff;
-    --purple:#9b45ff;
-    --grad:linear-gradient(120deg,#4f7cff,#9b45ff);
+    --bg:#080B1B; --bg-2:#0C1026; --surface:#141832; --surface-2:#1A1F3D;
+    --line:rgba(160,170,255,.12); --line-2:rgba(160,170,255,.2);
+    --roxo:#7C3AED; --roxo-2:#9F67FF; --azul:#278BFF;
+    --texto:#F7F7FF; --texto-2:#B8B8D2; --texto-3:#8A8BAE;
+    --verde:#3BD68A; --vermelho:#F0476A;
+    --grad:linear-gradient(110deg,var(--roxo) 0%,#5B5CF6 55%,var(--azul) 100%);
+    --grad-texto:linear-gradient(100deg,#A672FF 0%,#7C6BFF 45%,#3E9BFF 100%);
+    --r-sm:10px; --r:14px; --r-lg:20px; --r-xl:26px;
+    --sombra:0 18px 50px rgba(3,4,16,.55);
+    --sombra-roxa:0 10px 34px rgba(124,58,237,.38);
+    --max:1200px;
+    --fonte:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
-  body{
-    background:var(--bg);
-    color:var(--txt);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
-    line-height:1.5;
-    overflow-x:hidden;
-    position:relative;
+  html{scroll-behavior:smooth;scroll-padding-top:84px}
+  body{margin:0;background:var(--bg);color:var(--texto);font-family:var(--fonte);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  img{max-width:100%;display:block}
+  a{color:inherit}
+  .container{width:min(var(--max),100% - 40px);margin-inline:auto}
+  .pular{position:absolute;left:-999px;top:8px;background:var(--roxo);color:#fff;padding:8px 14px;border-radius:8px;z-index:100}
+  .pular:focus{left:12px}
+  :focus-visible{outline:2px solid var(--roxo-2);outline-offset:3px;border-radius:6px}
+
+  /* fundo com luzes */
+  .luzes{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .luzes i{position:absolute;border-radius:50%;filter:blur(110px);opacity:.42}
+  .luzes i:nth-child(1){width:620px;height:620px;background:#5B2BD9;top:-220px;right:-120px}
+  .luzes i:nth-child(2){width:520px;height:520px;background:#1E5BD8;top:380px;left:-260px;opacity:.28}
+  .luzes i:nth-child(3){width:560px;height:560px;background:#6D28D9;bottom:-240px;right:10%;opacity:.25}
+  main,header,footer{position:relative;z-index:1}
+
+  /* ===== Botões ===== */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 24px;border-radius:var(--r);font:700 15.5px/1 var(--fonte);text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .15s ease,box-shadow .2s ease,background .2s ease,border-color .2s ease;white-space:nowrap}
+  .btn svg{width:19px;height:19px;flex:none}
+  .btn-primario{background:var(--grad);color:#fff;box-shadow:var(--sombra-roxa)}
+  .btn-primario:hover{transform:translateY(-1px);box-shadow:0 14px 40px rgba(124,58,237,.55)}
+  .btn-contorno{background:rgba(20,24,50,.5);color:var(--texto);border-color:var(--line-2)}
+  .btn-contorno:hover{border-color:rgba(160,140,255,.5);background:rgba(28,32,66,.7)}
+  .btn-pequeno{padding:10px 16px;font-size:14px;border-radius:12px}
+
+  /* ===== Cabeçalho ===== */
+  .topo{position:sticky;top:0;z-index:50;background:rgba(8,11,27,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .2s}
+  .topo.rolou{border-bottom-color:var(--line)}
+  .topo .container{display:flex;align-items:center;gap:24px;height:72px}
+  .marca{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:21px;letter-spacing:.6px}
+  .marca img{width:36px;height:36px}
+  .nav{display:flex;gap:6px;margin:0 auto}
+  .nav a{padding:9px 16px;border-radius:10px;color:var(--texto-2);text-decoration:none;font-weight:600;font-size:15px;transition:color .15s,background .15s}
+  .nav a:hover{color:var(--texto);background:rgba(255,255,255,.05)}
+  .acoes{display:flex;gap:10px;align-items:center}
+  .menu-btn{display:none;background:none;border:1px solid var(--line-2);color:var(--texto);border-radius:10px;width:42px;height:42px;cursor:pointer}
+
+  /* ===== Hero ===== */
+  .hero{padding:56px 0 40px}
+  .hero .container{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:center}
+  .selo{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:rgba(20,24,50,.7);border:1px solid var(--line-2);font-size:13px;font-weight:600;color:var(--texto-2)}
+  .selo b{width:8px;height:8px;border-radius:50%;background:var(--verde);box-shadow:0 0 10px var(--verde)}
+  h1{font-size:clamp(40px,5vw,72px);line-height:1.02;letter-spacing:-1.8px;margin:22px 0 20px;font-weight:800}
+  h1 .linha{white-space:nowrap}
+  h2{text-wrap:balance}
+  h1 .grad,.grad{background:var(--grad-texto);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.sub{font-size:clamp(17px,1.6vw,20px);color:var(--texto-2);max-width:500px;margin:0 0 32px}
+  .hero .ctas{display:flex;gap:14px;flex-wrap:wrap}
+  .confianca{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:34px;padding:0;list-style:none}
+  .confianca li{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--texto-2);font-weight:500}
+  .confianca svg{width:18px;height:18px}
+  .arte{position:relative}
+  .arte{margin-right:-4%}
+  .arte img{width:100%;height:auto;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 12%,#000 90%,transparent 100%),linear-gradient(180deg,transparent 0,#000 10%,#000 82%,transparent 100%);
+            mask-image:linear-gradient(90deg,transparent 0,#000 12%,#000 90%,transparent 100%),linear-gradient(180deg,transparent 0,#000 10%,#000 82%,transparent 100%);
+    -webkit-mask-composite:source-in;mask-composite:intersect;
+    animation:flutua 7s ease-in-out infinite}
+  @keyframes flutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .arte .legenda{position:absolute;left:12%;bottom:6%;font-size:11.5px;color:var(--texto-3);background:rgba(8,11,27,.6);padding:4px 10px;border-radius:999px}
+
+  /* ===== Seções ===== */
+  section{padding:56px 0}
+  .titulo-secao{text-align:center;max-width:680px;margin:0 auto 40px}
+  .etiqueta{display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.35);color:#C9B4FF;font-size:13px;font-weight:700;letter-spacing:.2px}
+  h2{font-size:clamp(30px,3.6vw,44px);line-height:1.1;letter-spacing:-.8px;margin:16px 0 12px;font-weight:800}
+  .titulo-secao p{color:var(--texto-2);margin:0;font-size:17px}
+
+  /* cards de recursos */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .card{position:relative;padding:24px;border-radius:var(--r-lg);background:linear-gradient(180deg,rgba(26,31,61,.85),rgba(20,24,50,.75));border:1px solid var(--line);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+  .card:hover{transform:translateY(-3px);border-color:rgba(160,140,255,.35);box-shadow:var(--sombra)}
+  .icone{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;margin-bottom:18px;background:linear-gradient(135deg,rgba(124,58,237,.35),rgba(39,139,255,.2));border:1px solid rgba(160,140,255,.25)}
+  .icone svg{width:26px;height:26px}
+  .card h3{margin:0 0 8px;font-size:18px;line-height:1.3}
+  .card p{margin:0;color:var(--texto-2);font-size:14.5px}
+
+  /* demonstração do produto (interface de verdade, em HTML) */
+  .demo .container{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.9fr);gap:44px;align-items:center}
+  .app{border-radius:var(--r-lg);overflow:hidden;background:#0E1124;border:1px solid var(--line-2);box-shadow:0 30px 80px rgba(2,3,14,.7),0 0 0 1px rgba(124,58,237,.12);display:grid;grid-template-columns:62px 190px 1fr 170px;height:440px;font-size:13px}
+  .app-rail{background:#0A0D1E;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 0}
+  .srv{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff}
+  .srv.on{border-radius:12px;box-shadow:0 0 0 2px #0A0D1E,0 0 0 4px var(--roxo-2)}
+  .srv.add{background:#161A36;color:var(--verde);font-size:22px;font-weight:600}
+  .app-canais{background:#11142B;padding:14px 10px;border-right:1px solid rgba(255,255,255,.04);overflow:hidden}
+  .app-canais .nome-srv{font-weight:800;font-size:14.5px;padding:2px 8px 12px;border-bottom:1px solid rgba(255,255,255,.05);margin-bottom:10px;display:flex;justify-content:space-between}
+  .cat{font-size:10.5px;letter-spacing:.8px;color:var(--texto-3);font-weight:800;margin:12px 8px 6px}
+  .canal{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;color:var(--texto-2);font-weight:600}
+  .canal.on{background:rgba(124,58,237,.28);color:#fff}
+  .canal .h{opacity:.6}
+  .voz-quem{display:flex;align-items:center;gap:6px;margin:2px 0 2px 26px;font-size:12px;color:var(--texto-2)}
+  .voz-quem i{width:18px;height:18px;border-radius:50%;display:inline-block}
+  .voz-quem i.fala{box-shadow:0 0 0 2px var(--verde)}
+  .app-chat{display:flex;flex-direction:column;min-width:0;background:#0E1124}
+  .chat-topo{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.05);font-weight:800;display:flex;gap:8px;align-items:center}
+  .chat-topo span{color:var(--texto-3);font-weight:500;font-size:12px}
+  .msgs{flex:1;padding:14px 16px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+  .msg{display:flex;gap:10px}
+  .ava{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff}
+  .msg b{font-size:13.5px}
+  .msg time{color:var(--texto-3);font-size:11px;margin-left:6px}
+  .msg p{margin:2px 0 0;color:#D9DAF0}
+  .reac{display:inline-flex;gap:4px;margin-top:6px;padding:2px 8px;border-radius:999px;background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.45);font-size:12px}
+  .card-voz{margin-top:6px;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:rgba(59,214,138,.1);border:1px solid rgba(59,214,138,.35);font-size:12.5px;color:#BFF3D8}
+  .digitando{color:var(--texto-3);font-size:12px;padding:0 16px 6px}
+  .digitando i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--texto-3);margin-right:2px;animation:pula 1.2s infinite}
+  .digitando i:nth-child(2){animation-delay:.15s}.digitando i:nth-child(3){animation-delay:.3s}
+  @keyframes pula{0%,60%,100%{transform:none;opacity:.5}30%{transform:translateY(-3px);opacity:1}}
+  .compor{margin:0 14px 14px;padding:11px 14px;border-radius:12px;background:#161A36;color:var(--texto-3);display:flex;justify-content:space-between}
+  .app-membros{background:#11142B;padding:14px 10px;border-left:1px solid rgba(255,255,255,.04)}
+  .membro{display:flex;align-items:center;gap:8px;padding:5px 6px;font-weight:600;color:var(--texto-2);font-size:12.5px}
+  .membro .ava{width:28px;height:28px;font-size:11px;position:relative}
+  .membro .ava::after{content:"";position:absolute;right:-1px;bottom:-1px;width:9px;height:9px;border-radius:50%;background:var(--verde);border:2px solid #11142B}
+  .membro small{display:block;color:var(--texto-3);font-weight:500;font-size:10.5px}
+  .demo-texto ul{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:14px}
+  .demo-texto li{display:flex;gap:12px;align-items:flex-start;color:var(--texto-2)}
+  .demo-texto li strong{color:var(--texto);display:block}
+  .num{flex:none;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--grad);font-weight:800;font-size:14px;color:#fff}
+
+  /* mais recursos */
+  .chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:960px;margin:0 auto}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:rgba(20,24,50,.75);border:1px solid var(--line);font-weight:600;font-size:14.5px;color:#DADBF2}
+
+  /* segurança */
+  .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .seg .card{display:flex;gap:16px;align-items:flex-start}
+  .seg .icone{margin:0;flex:none}
+
+  /* chamada final */
+  .cta-final .caixa{position:relative;overflow:hidden;border-radius:var(--r-xl);padding:56px 48px;background:radial-gradient(circle at 85% 20%,rgba(39,139,255,.25),transparent 45%),radial-gradient(circle at 10% 90%,rgba(124,58,237,.35),transparent 50%),linear-gradient(135deg,#151A3B,#0F1230);border:1px solid var(--line-2);display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center}
+  .cta-final h2{margin-top:14px}
+  .cta-final p{color:var(--texto-2);font-size:17px;margin:0}
+  .cta-final .ctas{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .versao{font-size:13px;color:var(--texto-3);text-align:center;min-height:18px}
+  .aviso-win{font-size:13px;color:var(--texto-3);margin-top:20px;max-width:640px}
+
+  /* rodapé */
+  .rodape{border-top:1px solid var(--line);padding:40px 0 48px;margin-top:40px}
+  .rodape .container{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+  .rodape nav{display:flex;gap:6px 22px;flex-wrap:wrap}
+  .rodape nav a{color:var(--texto-2);text-decoration:none;font-weight:600;font-size:14.5px}
+  .rodape nav a:hover{color:var(--texto)}
+  .rodape small{color:var(--texto-3)}
+
+  /* entrada suave */
+  .surge{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .surge.visivel{opacity:1;transform:none}
+
+  /* ===== Responsivo ===== */
+  @media (max-width:1080px){
+    .cards{grid-template-columns:repeat(2,1fr)}
+    .app{grid-template-columns:58px 170px 1fr}
+    .app-membros{display:none}
   }
-  /* luzes de fundo */
-  body::before,body::after{
-    content:"";position:fixed;z-index:0;border-radius:50%;
-    filter:blur(90px);opacity:.5;pointer-events:none;
+  @media (max-width:900px){
+    .nav{display:none}
+    .menu-btn{display:grid;place-items:center;margin-left:auto}
+    .acoes .btn-contorno{display:none}
+    .topo.aberto .nav{display:flex;position:absolute;top:72px;left:0;right:0;flex-direction:column;background:rgba(8,11,27,.97);padding:12px 20px 18px;border-bottom:1px solid var(--line)}
+    .hero{padding-top:32px}
+    .hero .container,.demo .container,.cta-final .caixa{grid-template-columns:1fr}
+    .arte{order:2}
+    .seg{grid-template-columns:1fr}
+    .cta-final .caixa{padding:36px 24px}
   }
-  body::before{width:520px;height:520px;background:#4f7cff;top:-180px;left:-120px}
-  body::after{width:520px;height:520px;background:#9b45ff;top:120px;right:-160px}
-  .wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:0 16px}
-
-  header{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
-  .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px;letter-spacing:.2px}
-  .brand img{width:40px;height:40px;border-radius:12px;display:block}
-  .nav-link{color:var(--muted);text-decoration:none;font-weight:600;font-size:15px}
-  .nav-link:hover{color:var(--txt)}
-
-  .hero{text-align:center;padding:48px 0 24px}
-  .hero h1{
-    font-size:clamp(34px,6vw,60px);line-height:1.05;margin:0 0 18px;font-weight:900;
-    letter-spacing:-.5px;
+  @media (max-width:600px){
+    .acoes .btn-primario{display:none}
+    .cards{grid-template-columns:1fr}
+    .app{grid-template-columns:52px 1fr;height:400px}
+    .app-canais{display:none}
+    .hero .ctas .btn{flex:1}
+    section{padding:44px 0}
   }
-  .hero h1 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p{font-size:clamp(16px,2.4vw,20px);color:var(--muted);max-width:620px;margin:0 auto 32px}
-
-  .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-  .btn{
-    display:inline-flex;align-items:center;gap:10px;justify-content:center;
-    padding:15px 26px;border-radius:14px;font-weight:700;font-size:16px;
-    text-decoration:none;cursor:pointer;border:1px solid transparent;transition:transform .08s ease,filter .15s ease;
-  }
-  .btn:active{transform:translateY(1px)}
-  .btn-primary{background:var(--grad);color:#fff;box-shadow:0 8px 30px rgba(123,78,255,.35)}
-  .btn-primary:hover{filter:brightness(1.08)}
-  .btn-ghost{background:var(--card);color:var(--txt);border-color:var(--line)}
-  .btn-ghost:hover{background:rgba(255,255,255,.08)}
-  .btn svg{width:20px;height:20px}
-  .hint{margin-top:16px;color:var(--muted);font-size:13px}
-
-  .shot{margin:48px auto 0;max-width:900px}
-  .shot .frame{
-    border:1px solid var(--line);border-radius:18px;overflow:hidden;
-    background:var(--bg2);box-shadow:0 30px 80px rgba(0,0,0,.45)
-  }
-  .shot .bar{display:flex;gap:7px;padding:12px 14px;border-bottom:1px solid var(--line)}
-  .shot .bar i{width:11px;height:11px;border-radius:50%;background:#3a3c57;display:block}
-  .shot .body{padding:0}
-  .shot iframe{width:100%;height:460px;border:0;display:block;background:var(--bg2)}
-
-  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:56px 0}
-  .feat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
-  .feat .ic{font-size:26px;margin-bottom:10px}
-  .feat h3{margin:0 0 6px;font-size:18px}
-  .feat p{margin:0;color:var(--muted);font-size:14px}
-
-  footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 48px;color:var(--muted);font-size:14px;text-align:center}
-  footer a{color:var(--muted);text-decoration:none;font-weight:600}
-  footer a:hover{color:var(--txt)}
-  .foot-links{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
-
-  @media (max-width:560px){
-    .shot iframe{height:380px}
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none !important;transition:none !important}
+    .surge{opacity:1;transform:none}
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand"><img src="icon.png" alt="Avlumi" /> Avlumi</div>
-      <a class="nav-link" href="https://comunidade-online.onrender.com">Entrar no navegador →</a>
-    </header>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<div class="luzes" aria-hidden="true"><i></i><i></i><i></i></div>
 
-    <section class="hero">
-      <h1>Sua <span class="g">comunidade</span>,<br/>do seu jeito.</h1>
-      <p>Servidores, canais, chamadas de voz e vídeo, compartilhar a tela e conversas privadas. Tudo num lugar só — e de graça.</p>
-      <div class="cta">
-        <a class="btn btn-primary" id="dl" href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest/download/Avlumi-Setup.exe">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-          Baixar para Windows
-        </a>
-        <a class="btn btn-ghost" href="https://comunidade-online.onrender.com">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>
-          Abrir no navegador
-        </a>
+<header class="topo" id="topo">
+  <div class="container">
+    <a class="marca" href="./" aria-label="Avlumi — início"><img src="logo.svg" alt="" width="36" height="36" />AVLUMI</a>
+    <nav class="nav" id="nav" aria-label="Principal">
+      <a href="#recursos">Recursos</a>
+      <a href="#seguranca">Segurança</a>
+      <a href="#baixar">Baixar</a>
+    </nav>
+    <div class="acoes">
+      <a class="btn btn-contorno btn-pequeno" href="https://comunidade-online.onrender.com/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+        Entrar
+      </a>
+      <a class="btn btn-primario btn-pequeno" href="https://comunidade-online.onrender.com/">Começar grátis →</a>
+    </div>
+    <button class="menu-btn" id="menuBtn" aria-label="Abrir menu" aria-expanded="false" aria-controls="nav">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="conteudo">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div>
+        <span class="selo"><b></b>Grátis para começar · Navegador e Windows</span>
+        <h1><span class="linha">Sua comunidade.</span><br /><span class="grad linha">Seu mundo.</span></h1>
+        <p class="sub">Converse, jogue e crie comunidades incríveis com pessoas de todo o Brasil e do mundo.</p>
+        <div class="ctas">
+          <a class="btn btn-primario" href="https://comunidade-online.onrender.com/">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+            Começar grátis →
+          </a>
+          <a class="btn btn-contorno" href="https://comunidade-online.onrender.com/?explorar=1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg>
+            Explorar a Avlumi
+          </a>
+        </div>
+        <ul class="confianca">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#9F67FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Comunidades do seu jeito</li>
+          <li><svg viewBox="0 0 24 24" fill="#FACC15" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>Voz e vídeo ao vivo</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="#3BD68A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>Privacidade sob seu controle</li>
+        </ul>
       </div>
-      <div class="hint">Grátis para Windows · Também funciona no navegador, sem instalar</div>
-    </section>
+      <div class="arte">
+        <img src="hero.webp" srcset="hero-640.webp 640w, hero.webp 1020w" sizes="(max-width: 900px) 100vw, 56vw" width="1020" height="528"
+             alt="Personagens com headsets ao redor de uma janela da Avlumi com canais, conversa e chamada de vídeo" fetchpriority="high" />
+        <span class="legenda">Ilustração</span>
+      </div>
+    </div>
+  </section>
 
-    <section class="shot">
-      <div class="frame">
-        <div class="bar"><i></i><i></i><i></i></div>
-        <div class="body">
-          <iframe src="https://comunidade-online.onrender.com" title="Prévia da Avlumi" loading="lazy"></iframe>
+  <!-- Recursos -->
+  <section id="recursos">
+    <div class="container">
+      <div class="titulo-secao surge">
+        <span class="etiqueta">Recursos</span>
+        <h2>Tudo pra sua galera, <span class="grad">num lugar só</span></h2>
+        <p>Do bate-papo do dia a dia às chamadas com a turma inteira.</p>
+      </div>
+      <div class="cards">
+        <article class="card surge">
+          <div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#C4A8FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <h3>Comunidades do seu jeito</h3>
+          <p>Crie ou entre em servidores sobre o que você curte: jogos, estudos, música e muito mais. Canais de texto, voz, fórum e palco.</p>
+        </article>
+        <article class="card surge">
+          <div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#8EC5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
+          <h3>Voz e vídeo em tempo real</h3>
+          <p>Entre na sala e fale na hora. Ligue a câmera, compartilhe a tela e assista vídeos do YouTube junto com a sala.</p>
+        </article>
+        <article class="card surge">
+          <div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#7FE7B4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+          <h3>Privacidade e controle</h3>
+          <p>Verificação em duas etapas, bloqueio de usuários, aparelhos conectados e ferramentas de moderação para cada servidor.</p>
+        </article>
+        <article class="card surge">
+          <div class="icone"><svg viewBox="0 0 24 24" fill="#B78CFF" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg></div>
+          <h3>Tudo em um só lugar</h3>
+          <p>Conversas privadas, grupos com amigos, figurinhas, enquetes, lembretes e busca — sem sair da plataforma.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demonstração -->
+  <section class="demo">
+    <div class="container">
+      <div class="app surge" role="img" aria-label="Exemplo da interface da Avlumi: servidores à esquerda, canais, conversa no canal geral e membros online">
+        <div class="app-rail" aria-hidden="true">
+          <div class="srv on" style="background:linear-gradient(135deg,#7C3AED,#278BFF)">MS</div>
+          <div class="srv" style="background:#E0663A">🎮</div>
+          <div class="srv" style="background:#1F9FB0">📚</div>
+          <div class="srv" style="background:#D9508A">🎵</div>
+          <div class="srv add">+</div>
+        </div>
+        <div class="app-canais" aria-hidden="true">
+          <div class="nome-srv">Meu Servidor <span>⌄</span></div>
+          <div class="cat">TEXTO</div>
+          <div class="canal on"><span class="h">#</span> geral</div>
+          <div class="canal"><span class="h">#</span> jogos</div>
+          <div class="canal"><span class="h">#</span> memes</div>
+          <div class="canal"><span class="h">💬</span> dúvidas</div>
+          <div class="cat">VOZ</div>
+          <div class="canal"><span class="h">🔊</span> Sala principal</div>
+          <div class="voz-quem"><i class="fala" style="background:#7C3AED"></i> Luna</div>
+          <div class="voz-quem"><i style="background:#E0663A"></i> Darkzin</div>
+          <div class="canal"><span class="h">🎙️</span> Palco</div>
+        </div>
+        <div class="app-chat" aria-hidden="true">
+          <div class="chat-topo"># geral <span>Bem-vindos! Leiam as regras 📌</span></div>
+          <div class="msgs">
+            <div class="msg"><div class="ava" style="background:#E0663A">R</div><div><b>Rafinha</b><time>Hoje às 14:32</time><p>Bora jogar mais tarde? 🎮</p></div></div>
+            <div class="msg"><div class="ava" style="background:#7C3AED">L</div><div><b>Luna</b><time>Hoje às 14:33</time><p>Partiu! Já tô na Sala principal 🔥</p><span class="reac">🔥 3</span></div></div>
+            <div class="msg"><div class="ava" style="background:#1F9FB0">D</div><div><b>Darkzin</b><time>Hoje às 14:34</time><p>Tô dentro!</p><span class="card-voz">🔊 Entrou na chamada · Sala principal</span></div></div>
+          </div>
+          <div class="digitando"><i></i><i></i><i></i> Rafinha está digitando…</div>
+          <div class="compor"><span>Mensagem em #geral</span><span>😀 ➤</span></div>
+        </div>
+        <div class="app-membros" aria-hidden="true">
+          <div class="cat">ONLINE — 4</div>
+          <div class="membro"><div class="ava" style="background:#7C3AED">L</div><div>Luna<small>🎮 Jogando Minecraft</small></div></div>
+          <div class="membro"><div class="ava" style="background:#E0663A">R</div><div>Rafinha<small>Disponível</small></div></div>
+          <div class="membro"><div class="ava" style="background:#1F9FB0">D</div><div>Darkzin<small>Na chamada</small></div></div>
+          <div class="membro"><div class="ava" style="background:#D9508A">B</div><div>Bia<small>Estudando 📚</small></div></div>
         </div>
       </div>
-    </section>
-
-    <section class="features">
-      <div class="feat"><div class="ic">🏠</div><h3>Servidores e canais</h3><p>Monte sua comunidade com canais de texto e voz, do seu jeito.</p></div>
-      <div class="feat"><div class="ic">🎙️</div><h3>Voz, vídeo e tela</h3><p>Converse, ligue a câmera e compartilhe a tela com a galera.</p></div>
-      <div class="feat"><div class="ic">💬</div><h3>Conversas privadas</h3><p>Chame alguém na direta e fale em particular, igual você já conhece.</p></div>
-      <div class="feat"><div class="ic">🛡️</div><h3>Moderação completa</h3><p>Cargos, permissões, filtros automáticos e registro de moderação.</p></div>
-    </section>
-
-    <footer>
-      <div class="foot-links">
-        <a href="https://comunidade-online.onrender.com">Abrir no navegador</a>
-        <a href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest">Todas as versões</a>
+      <div class="demo-texto surge">
+        <span class="etiqueta">Como funciona</span>
+        <h2>Entre em servidores, faça amigos e <span class="grad">divirta-se!</span></h2>
+        <ul>
+          <li><span class="num">1</span><div><strong>Escolha seus servidores</strong>Crie o seu em segundos ou encontre comunidades no Explorar.</div></li>
+          <li><span class="num">2</span><div><strong>Converse nos canais</strong>Cada assunto no seu canal, com reações, tópicos, enquetes e figurinhas.</div></li>
+          <li><span class="num">3</span><div><strong>Chame a galera na voz</strong>Clique numa sala de voz e já está falando — com câmera e tela, se quiser.</div></li>
+        </ul>
       </div>
-      <div>No primeiro download o Windows pode mostrar um aviso azul — clique em “Mais informações” → “Executar assim mesmo”.</div>
-      <div style="margin-top:10px;opacity:.7">© <span id="y"></span> Avlumi</div>
-    </footer>
+    </div>
+  </section>
+
+  <!-- Mais recursos -->
+  <section>
+    <div class="container">
+      <div class="titulo-secao surge">
+        <span class="etiqueta">E tem mais</span>
+        <h2>Feita pra comunidade <span class="grad">ficar viva</span></h2>
+      </div>
+      <div class="chips surge">
+        <span class="chip">💬 Fórum com tópicos</span><span class="chip">🎙️ Canal palco</span><span class="chip">📺 Assistir junto</span>
+        <span class="chip">🎲 Jogos na chamada</span><span class="chip">🎁 Sorteios</span><span class="chip">🏷️ Figurinhas</span>
+        <span class="chip">👥 Grupos com amigos</span><span class="chip">🎯 Missões e conquistas</span><span class="chip">🐾 Pet virtual</span>
+        <span class="chip">🎭 Cargo por reação</span><span class="chip">🌐 Traduzir mensagem</span><span class="chip">⏰ Lembretes</span>
+        <span class="chip">🤖 Robôs</span><span class="chip">📊 Painel do servidor</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Segurança -->
+  <section id="seguranca">
+    <div class="container">
+      <div class="titulo-secao surge">
+        <span class="etiqueta">Segurança</span>
+        <h2>Você no controle da <span class="grad">sua conta</span></h2>
+        <p>Ferramentas que já estão disponíveis na Avlumi, pra você e pro seu servidor.</p>
+      </div>
+      <div class="seg">
+        <article class="card surge"><div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#C4A8FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><h3>Verificação em duas etapas</h3><p>Além da senha, um código do app autenticador no seu celular.</p></div></article>
+        <article class="card surge"><div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#8EC5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="14" height="11" rx="2"/><rect x="17" y="8" width="5" height="12" rx="1"/><path d="M6 19h6"/></svg></div><div><h3>Aparelhos conectados</h3><p>Veja onde sua conta está aberta e desconecte o que não reconhecer.</p></div></article>
+        <article class="card surge"><div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#FF9AB0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg></div><div><h3>Bloqueio e denúncias</h3><p>Bloqueie quem incomoda e denuncie mensagens para a moderação.</p></div></article>
+        <article class="card surge"><div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#7FE7B4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div><div><h3>Moderação completa</h3><p>Cargos, permissões, filtro automático, histórico de ações e banimentos.</p></div></article>
+        <article class="card surge"><div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#FFD27F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 21v-1a6 6 0 0 1 12 0v1M15 21v-1a4 4 0 0 1 6-3.4"/></svg></div><div><h3>Contas para menores</h3><p>Responsáveis acompanham e aprovam a entrada em servidores.</p></div></article>
+        <article class="card surge"><div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#B9B9FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9"/><path d="M12 12v9M8 17l4 4 4-4"/></svg></div><div><h3>Seus dados são seus</h3><p>Baixe uma cópia do seu perfil, amigos e mensagens quando quiser.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Baixar -->
+  <section class="cta-final" id="baixar">
+    <div class="container">
+      <div class="caixa surge">
+        <div>
+          <span class="etiqueta">Conecte-se agora</span>
+          <h2>Conecte-se de <span class="grad">qualquer lugar</span></h2>
+          <p>Use direto no navegador, sem instalar nada — ou baixe o app para Windows, que abre rápido, avisa das mensagens e se atualiza sozinho.</p>
+        </div>
+        <div class="ctas">
+          <a class="btn btn-primario" id="baixarWin" href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest/download/Avlumi-Setup.exe">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3zM11.5 4.3 21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg>
+            Baixar para Windows
+          </a>
+          <a class="btn btn-contorno" href="https://comunidade-online.onrender.com/">Acessar pelo navegador →</a>
+          <div class="versao" id="versao" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="aviso-win">No primeiro download, o Windows pode mostrar um aviso azul. Clique em “Mais informações” e depois em “Executar assim mesmo”.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <div class="container">
+    <a class="marca" href="./"><img src="logo.svg" alt="" width="30" height="30" />AVLUMI</a>
+    <nav aria-label="Rodapé">
+      <a href="https://comunidade-online.onrender.com/">Abrir no navegador</a>
+      <a href="https://comunidade-online.onrender.com/?explorar=1">Explorar comunidades</a>
+      <a href="https://comunidade-online.onrender.com/?robos=1">Robôs</a>
+      <a href="#seguranca">Segurança</a>
+      <a href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest">Todas as versões</a>
+    </nav>
+    <small>© <span id="ano"></span> Avlumi</small>
   </div>
-  <script>document.getElementById('y').textContent=new Date().getFullYear();</script>
+</footer>
+
+<script>
+  document.getElementById('ano').textContent = new Date().getFullYear();
+  // cabeçalho
+  const topo = document.getElementById('topo');
+  addEventListener('scroll', () => topo.classList.toggle('rolou', scrollY > 8), { passive: true });
+  const menuBtn = document.getElementById('menuBtn');
+  menuBtn.addEventListener('click', () => {
+    const aberto = topo.classList.toggle('aberto');
+    menuBtn.setAttribute('aria-expanded', aberto);
+  });
+  document.querySelectorAll('#nav a').forEach(a => a.addEventListener('click', () => { topo.classList.remove('aberto'); menuBtn.setAttribute('aria-expanded', 'false'); }));
+  // entrada suave das seções
+  const els = document.querySelectorAll('.surge');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visivel'); io.unobserve(e.target); } }), { threshold: .12 });
+    els.forEach(el => io.observe(el));
+  } else els.forEach(el => el.classList.add('visivel'));
+  // versão do app: só mostra o download se o instalador estiver publicado
+  fetch('https://api.github.com/repos/wallacemapdecampos-ship-it/avlumi-app/releases/latest')
+    .then(r => r.ok ? r.json() : null)
+    .then(rel => {
+      if (!rel) return;
+      const exe = (rel.assets || []).find(a => a.name === 'Avlumi-Setup.exe');
+      const v = document.getElementById('versao');
+      if (exe) v.textContent = `Versão ${String(rel.tag_name).replace(/^v/, '')} · ${Math.round(exe.size / 1048576)} MB`;
+      else { document.getElementById('baixarWin').style.display = 'none'; v.textContent = 'O app para Windows está sendo atualizado. Use pelo navegador por enquanto.'; }
+    })
+    .catch(() => {});
+</script>
 </body>
 </html>
