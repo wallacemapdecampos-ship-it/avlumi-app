@@ -177,8 +177,7 @@
   .rx h3{margin:0 0 10px;font-size:clamp(24px,2.4vw,32px);line-height:1.15;letter-spacing:-.6px;font-weight:800}
   .rx p{margin:0;color:#A9ABC6;font-size:16.5px;line-height:1.6}
   .rx-img{margin:0;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 60px rgba(0,0,0,.45);background:#0E1124}
-  .rx-img{width:fit-content;max-width:100%;margin-inline:auto}
-  .rx-img img{width:auto;max-width:100%;height:auto;display:block} /* nunca amplia além do tamanho real (fica nítido) */
+  .rx-img img{width:100%;height:auto;display:block} /* imagens em 2x: nítidas também em telas de alta resolução */
   .rx-grande{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center;margin:0 0 110px}
   .rx-grande.rx-inv{grid-template-columns:1.2fr .8fr}
   .rx-grande.rx-inv .rx-txt{order:2}
@@ -331,27 +330,27 @@
 
   <article class="rx-grande">
     <div class="rx-txt"><h3>Sua galera, <span class="rx-dest">num lugar só</span></h3><p>Crie servidores com canais de texto e voz, fórum e palco, cargos e permissões.</p></div>
-    <figure class="rx-img"><img src="img/rec-servidor.webp" width="563" height="326" alt="Servidor da Avlumi com canais de texto e voz" loading="lazy" decoding="async" /></figure>
+    <figure class="rx-img"><img src="img/rec-servidor.webp" width="1126" height="652" alt="Servidor da Avlumi com canais de texto e voz" loading="lazy" decoding="async" /></figure>
   </article>
 
   <div class="rx-par">
-    <article class="rx-card"><h3>Conversa com <span class="rx-dest">mais vida</span></h3><p>Reações, figurinhas, emojis do servidor, enquetes, sons, mensagens que somem e tradução.</p><figure class="rx-img"><img src="img/rec-conversa.webp" width="514" height="317" alt="Mensagem com reações e enquete" loading="lazy" decoding="async" /></figure></article>
-    <article class="rx-card"><h3>Entre e saia <span class="rx-dest">quando quiser</span></h3><p>Salas de voz abertas, sem precisar ligar. Quem fala acende em verde.</p><figure class="rx-img"><img src="img/rec-voz.webp" width="594" height="292" alt="Sala de voz com quem está falando" loading="lazy" decoding="async" /></figure></article>
+    <article class="rx-card"><h3>Conversa com <span class="rx-dest">mais vida</span></h3><p>Reações, figurinhas, emojis do servidor, enquetes, sons, mensagens que somem e tradução.</p><figure class="rx-img"><img src="img/rec-conversa.webp" width="1028" height="634" alt="Mensagem com reações e enquete" loading="lazy" decoding="async" /></figure></article>
+    <article class="rx-card"><h3>Entre e saia <span class="rx-dest">quando quiser</span></h3><p>Salas de voz abertas, sem precisar ligar. Quem fala acende em verde.</p><figure class="rx-img"><img src="img/rec-voz.webp" width="1188" height="581" alt="Sala de voz com quem está falando" loading="lazy" decoding="async" /></figure></article>
   </div>
 
   <article class="rx-grande rx-inv">
     <div class="rx-txt"><h3>Como se estivessem <span class="rx-dest">na mesma sala</span></h3><p>Voz, vídeo e tela compartilhada em até 1080p 60 FPS no Lumen. Assista ao YouTube junto e jogue minijogos na chamada.</p></div>
-    <figure class="rx-img"><img src="img/rec-chamada.webp" width="514" height="320" alt="Chamada de vídeo com quatro pessoas" loading="lazy" decoding="async" /></figure>
+    <figure class="rx-img"><img src="img/rec-chamada.webp" width="1028" height="640" alt="Chamada de vídeo com quatro pessoas" loading="lazy" decoding="async" /></figure>
   </article>
 
   <div class="rx-par">
-    <article class="rx-card"><h3>Veja quem está <span class="rx-dest">por aí</span></h3><p>Quem está online, o que está jogando (pelo app de Windows) e o status da galera.</p><figure class="rx-img"><img src="img/rec-ativo.webp" width="527" height="252" alt="Painel Ativo agora com amigos jogando" loading="lazy" decoding="async" /></figure></article>
-    <article class="rx-card"><h3>Sempre tem <span class="rx-dest">algo pra fazer</span></h3><p>Missões do dia, conquistas, ranking, pet virtual, loja de moedas e sorteios.</p><figure class="rx-img"><img src="img/rec-missoes.webp" width="488" height="278" alt="Missões do dia e pet virtual" loading="lazy" decoding="async" /></figure></article>
+    <article class="rx-card"><h3>Veja quem está <span class="rx-dest">por aí</span></h3><p>Quem está online, o que está jogando (pelo app de Windows) e o status da galera.</p><figure class="rx-img"><img src="img/rec-ativo.webp" width="1054" height="504" alt="Painel Ativo agora com amigos jogando" loading="lazy" decoding="async" /></figure></article>
+    <article class="rx-card"><h3>Sempre tem <span class="rx-dest">algo pra fazer</span></h3><p>Missões do dia, conquistas, ranking, pet virtual, loja de moedas e sorteios.</p><figure class="rx-img"><img src="img/rec-missoes.webp" width="976" height="556" alt="Missões do dia e pet virtual" loading="lazy" decoding="async" /></figure></article>
   </div>
 
   <div class="rx-par">
-    <article class="rx-card" id="seguranca"><h3>Segura <span class="rx-dest">de verdade</span></h3><p>Verificação em duas etapas, aparelhos conectados, bloqueio, denúncias e histórico de moderação.</p><figure class="rx-img"><img src="img/rec-seguranca.webp" width="529" height="243" alt="Configurações de segurança da conta" loading="lazy" decoding="async" /></figure></article>
-    <article class="rx-card"><h3>No PC e <span class="rx-dest">no celular</span></h3><p>App leve para Windows, com modo econômico e atalhos, ou direto no navegador do celular.</p><figure class="rx-img"><img src="img/rec-aparelhos.webp" width="436" height="249" alt="Avlumi no computador e no celular" loading="lazy" decoding="async" /></figure></article>
+    <article class="rx-card" id="seguranca"><h3>Segura <span class="rx-dest">de verdade</span></h3><p>Verificação em duas etapas, aparelhos conectados, bloqueio, denúncias e histórico de moderação.</p><figure class="rx-img"><img src="img/rec-seguranca.webp" width="1058" height="486" alt="Configurações de segurança da conta" loading="lazy" decoding="async" /></figure></article>
+    <article class="rx-card"><h3>No PC e <span class="rx-dest">no celular</span></h3><p>App leve para Windows, com modo econômico e atalhos, ou direto no navegador do celular.</p><figure class="rx-img"><img src="img/rec-aparelhos.webp" width="872" height="498" alt="Avlumi no computador e no celular" loading="lazy" decoding="async" /></figure></article>
   </div>
 </section>
 
