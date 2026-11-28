@@ -247,7 +247,7 @@
       <a class="casa" href="#topo" aria-label="Início" data-sec="topo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.2 2.8 11a1 1 0 0 0 1.3 1.5l.9-.8V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-8.3l.9.8a1 1 0 1 0 1.3-1.5z"/></svg></a>
       <a href="#recursos" data-sec="recursos">Recursos</a>
       <a href="#seguranca" data-sec="seguranca">Segurança</a>
-      <a href="#baixar" data-sec="baixar">Baixar</a>
+      <a href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest/download/Avlumi-Setup.exe" data-sec="baixar">Baixar</a>
     </nav>
     <div class="acoes">
       <a class="btn btn-entrar" href="https://comunidade-online.onrender.com/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>Entrar</a>
@@ -362,7 +362,7 @@
 <section class="final">
   <h2>Pronto para criar sua comunidade?</h2>
   <p>Leva menos de um minuto e é grátis.</p>
-  <div class="final-ctas"><a class="btn btn-f btn-cheio" href="https://comunidade-online.onrender.com/">Começar grátis →</a><a class="btn btn-f btn-vazado" href="#baixar">Baixar para Windows</a></div>
+  <div class="final-ctas"><a class="btn btn-f btn-cheio" href="https://comunidade-online.onrender.com/">Começar grátis →</a><a class="btn btn-f btn-vazado" href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest/download/Avlumi-Setup.exe">Baixar para Windows</a></div>
 </section>
 
 <footer class="rodape">
@@ -393,6 +393,7 @@
   const ehComputador = !/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
   if (!ehComputador) {
     document.getElementById('baixarWin').style.display = 'none';
+    const nb = document.querySelector('.nav a[data-sec="baixar"]'); if (nb) nb.style.display = 'none';
     document.querySelectorAll('.link-nav').forEach(a => { a.classList.add('btn', 'btn-win'); a.textContent = 'Abrir a Avlumi no celular →'; });
     const fb = document.querySelector('.final .btn-vazado'); if (fb) { fb.textContent = 'Entrar na minha conta'; fb.href = 'https://comunidade-online.onrender.com/'; }
   }
