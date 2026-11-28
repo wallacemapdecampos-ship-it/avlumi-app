@@ -172,7 +172,12 @@
     .topo{position:sticky;height:64px;padding:0 18px;background:rgba(8,11,27,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
     .marca{font-size:22px}.marca img{width:40px}
     .nav{display:none}
-    .btn-entrar{display:none}
+    .btn-entrar{display:inline-flex;height:40px;padding:0 12px;font-size:14px}
+    .btn-entrar svg{width:16px;height:16px}
+    .btn-topo{height:40px;padding:0 12px;font-size:14px}
+    .topo .marca{font-size:18px;gap:6px}.topo .marca img{width:30px}
+    .link-nav.btn{text-decoration:none}
+    .acoes{gap:8px}
     .arte{position:relative;left:auto;width:100%;margin-top:0}
     .arte img{-webkit-mask-image:linear-gradient(180deg,#000 80%,transparent 100%);mask-image:linear-gradient(180deg,#000 80%,transparent 100%)}
     .hero-txt,.cards,.mock,.chamada,.versao{position:relative;left:auto;top:auto;width:auto}
@@ -184,7 +189,8 @@
     .confianca{flex-wrap:wrap;gap:12px 20px}
     .confianca li{font-size:14px}
     .cards{display:grid;grid-template-columns:1fr;gap:12px;padding:0 20px;margin-top:34px}
-    .card{height:auto;padding:18px}
+    .card{height:auto;padding:16px}
+    .card img{width:48px}
     .card h3{font-size:16px;white-space:normal}.card p{font-size:13.5px}
     .chamada{padding:0 20px;margin-top:40px}
     .chamada h2{font-size:28px}.chamada h2 > span{white-space:normal}
@@ -195,6 +201,10 @@
     .versao{padding:8px 20px 0}
     .mock{margin:28px 0 0 -10px;width:calc(100% + 10px)}
     .castelo{display:none}
+  }
+  @media (max-width:400px){
+    .topo .marca{font-size:0}
+    .btn-entrar{padding:0 10px}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none !important;scroll-behavior:auto !important}}
 </style>
@@ -334,13 +344,20 @@
     links.forEach(a => a.classList.toggle('ativo', a.dataset.sec === atual));
   };
   addEventListener('scroll', marcar, { passive: true }); marcar();
+  // celular/tablet: o instalador é só para Windows
+  const ehComputador = !/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if (!ehComputador) {
+    document.getElementById('baixarWin').style.display = 'none';
+    document.querySelectorAll('.link-nav').forEach(a => { a.classList.add('btn', 'btn-win'); a.textContent = 'Abrir a Avlumi no celular →'; });
+    const fb = document.querySelector('.final .btn-vazado'); if (fb) { fb.textContent = 'Entrar na minha conta'; fb.href = 'https://comunidade-online.onrender.com/'; }
+  }
   // só mostra o download se o instalador estiver publicado
   fetch('https://api.github.com/repos/wallacemapdecampos-ship-it/avlumi-app/releases/latest')
     .then(r => r.ok ? r.json() : null)
     .then(rel => {
       if (!rel) return;
       const exe = (rel.assets || []).find(a => a.name === 'Avlumi-Setup.exe');
-      if (!exe) document.getElementById('baixarWin').style.display = 'none';
+      if (!exe || !ehComputador) document.getElementById('baixarWin').style.display = 'none';
       else document.getElementById('versao').textContent = 'Versão ' + String(rel.tag_name).replace(/^v/, '') + ' · grátis para Windows';
     })
     .catch(() => {});
