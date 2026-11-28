@@ -146,6 +146,7 @@ let telaPronta = false;
 let winPronta = false;    // a tela principal terminou de carregar
 let liberadoAbrir = false; // a verificação de atualização já decidiu que pode abrir
 let atualizando = false;   // há uma atualização sendo baixada/instalada agora
+let atualizacaoPronta = null; // versão nova já baixada enquanto o app estava aberto
 const SPLASH_FILE = path.join(__dirname, 'splash.html');
 const TEM_SPLASH = fs.existsSync(SPLASH_FILE);
 const INICIO = Date.now();
@@ -308,6 +309,8 @@ function createWindow() {
   // Links que não são da própria tela abrem no navegador padrão
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('avlumi://mostrar')) { mostrarJanela(); return { action: 'deny' }; }
+    if (url.startsWith('avlumi://atualizar')) { if (atualizacaoPronta) { try { autoUpdater.quitAndInstall(true, true); } catch (_e) {} } return { action: 'deny' }; }
+    if (url.startsWith('avlumi://tem-atualizacao')) { if (atualizacaoPronta) avisarTela('avlumi-atualizacao', { versao: atualizacaoPronta }); return { action: 'deny' }; }
     if (url.startsWith('avlumi://icone/')) { trocarIcone(url.slice('avlumi://icone/'.length).replace(/[^a-z]/g, '')); return { action: 'deny' }; }
     if (url.startsWith('avlumi://ptt/')) { comandoPtt(url.slice('avlumi://ptt/'.length)); return { action: 'deny' }; }
     if (url.startsWith('avlumi://jogos/')) { detectarJogos = url.endsWith('/ligar'); if (detectarJogos) { jogoAtual = undefined; checarJogos(); } else if (jogoAtual) { jogoAtual = null; avisarTela('avlumi-jogo', { jogo: null }); } return { action: 'deny' }; }
@@ -479,16 +482,25 @@ app.whenReady().then(async () => {
     autoUpdater.autoInstallOnAppQuit = true;  // reserva: se abrir sem atualizar, instala ao fechar
 
     autoUpdater.on('update-available', () => {
+      if (telaPronta) return;                 // app já aberto: baixa em segundo plano, sem segurar nada
       atualizando = true;                     // segura na splash até terminar
       splashStatus('Atualização disponível, baixando…');
       splashProgress(0);
     });
     autoUpdater.on('download-progress', (p) => {
+      if (telaPronta) return;
       atualizando = true;
       splashStatus('Baixando atualização… ' + Math.round(p.percent || 0) + '%');
       splashProgress(p.percent || 0);
     });
-    autoUpdater.on('update-downloaded', () => {
+    autoUpdater.on('update-downloaded', (info) => {
+      if (telaPronta) {
+        // App já aberto (talvez numa chamada): não reinicia sozinho. Mostra o aviso igual ao do site;
+        // a pessoa clica em "Atualizar agora" quando quiser (ou instala ao fechar).
+        atualizacaoPronta = (info && info.version) || 'nova';
+        avisarTela('avlumi-atualizacao', { versao: atualizacaoPronta });
+        return;
+      }
       splashStatus('Instalando atualização…');
       splashProgress(100);
       // aplica e reinicia já na versão nova
@@ -504,8 +516,8 @@ app.whenReady().then(async () => {
     // Rede de segurança: se uma atualização travar no meio, desiste e abre em 90s
     setTimeout(() => { if (atualizando && !telaPronta) { atualizando = false; liberar(); } }, 90000);
 
-    // Enquanto o app estiver aberto, continua checando de hora em hora (instala ao fechar)
-    setInterval(() => { try { autoUpdater.checkForUpdates(); } catch (_e) {} }, 1000 * 60 * 60);
+    // Enquanto o app estiver aberto, checa a cada 15 min; achou, baixa e mostra o aviso "Atualizar agora"
+    setInterval(() => { try { autoUpdater.checkForUpdates(); } catch (_e) {} }, 1000 * 60 * 15);
   } catch (_e) {
     // em desenvolvimento ou sem configuração de update: só abre o app
     liberar();
