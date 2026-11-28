@@ -184,6 +184,85 @@
   .surge{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
   .surge.visivel{opacity:1;transform:none}
 
+
+  /* ===== Layout fiel à referência ===== */
+  .topo{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .topo.rolou{background:rgba(8,11,27,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .topo .container{height:78px;width:min(1440px,100% - 64px)}
+  .marca{font-size:24px;letter-spacing:1px}
+  .marca img{width:42px;height:42px}
+  .nav{gap:0;padding:5px;border-radius:14px;background:rgba(14,17,40,.55);border:1px solid var(--line)}
+  .nav a{position:relative;padding:10px 20px}
+  .nav a.casa{color:#A98BFF}
+  .nav a.casa::after{content:"";position:absolute;left:14px;right:14px;bottom:-6px;height:3px;border-radius:3px;background:var(--roxo-2)}
+  .nav a.casa svg{width:20px;height:20px;display:block}
+  .hero{position:relative;padding:0;min-height:min(560px,calc(33vw + 70px));margin-top:-78px}
+  .hero .container{display:block;width:min(1440px,100% - 64px);padding-top:120px;padding-bottom:30px;position:relative;z-index:2}
+  .hero-txt{max-width:600px}
+  .hero .arte{position:absolute;top:0;right:0;width:min(61vw,1180px);margin:0;z-index:1;pointer-events:none}
+  .hero .arte img{width:100%;height:auto;border-radius:0;animation:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 16%),linear-gradient(180deg,#000 80%,transparent 100%);
+            mask-image:linear-gradient(90deg,transparent 0,#000 16%),linear-gradient(180deg,#000 80%,transparent 100%);
+    -webkit-mask-composite:source-in;mask-composite:intersect}
+  .hero .arte .legenda{left:auto;right:18px;bottom:1%;font-size:11px;opacity:.75}
+  h1{font-size:clamp(40px,4.6vw,70px);letter-spacing:-1.6px;margin:20px 0 18px}
+  .hero p.sub{font-size:clamp(16px,1.35vw,20px);max-width:470px}
+  .confianca{flex-wrap:nowrap;gap:24px;margin-top:30px}
+  .confianca li{white-space:nowrap}
+  /* cards horizontais logo abaixo do hero */
+  .cards-faixa{padding:8px 0 34px}
+  .cards-faixa .container{width:min(1440px,100% - 64px)}
+  .cards-h{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+  .card-h{display:flex;align-items:center;gap:14px;padding:22px 16px 22px 18px;border-radius:16px;background:linear-gradient(180deg,rgba(24,28,58,.88),rgba(17,20,44,.88));border:1px solid var(--line);text-decoration:none;color:inherit;transition:transform .2s,border-color .2s,box-shadow .2s}
+  .card-h:hover{transform:translateY(-3px);border-color:rgba(160,140,255,.38);box-shadow:var(--sombra)}
+  .card-h .glifo{flex:none;width:50px;height:50px;display:grid;place-items:center}
+  .card-h .glifo svg{width:46px;height:46px}
+  .card-h h3{margin:0 0 6px;font-size:16.5px}
+  .card-h p{margin:0;color:var(--texto-2);font-size:13.5px;line-height:1.5}
+  .card-h .seta{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line-2);color:var(--texto-2);margin-left:auto}
+  /* mockup inclinado + chamada */
+  .vitrine{position:relative;padding:20px 0 70px;overflow:hidden}
+  .vitrine .container{width:min(1440px,100% - 64px);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center}
+  .inclina{perspective:1400px}
+  .inclina .app{transform:rotateY(14deg) rotateX(4deg) rotateZ(-2deg);transform-origin:left center;box-shadow:-20px 40px 90px rgba(2,3,14,.75),0 0 0 1px rgba(124,58,237,.25),0 0 60px rgba(124,58,237,.18);grid-template-columns:58px 170px 1fr 190px}
+  .painel-voz{background:#11142B;border-left:1px solid rgba(255,255,255,.04);display:flex;flex-direction:column;padding:12px;gap:10px}
+  .painel-voz .tela{flex:1;border-radius:12px;background:radial-gradient(circle at 70% 30%,#3a6bd6,transparent 55%),linear-gradient(160deg,#25306b,#141a3d 70%);position:relative;overflow:hidden}
+  .painel-voz .tela::after{content:"";position:absolute;left:0;right:0;bottom:0;height:45%;background:linear-gradient(170deg,transparent 0 30%,#0b0f2a 31%),linear-gradient(100deg,transparent 40%,#121845 41% 60%,transparent 61%)}
+  .painel-voz .mic{align-self:center;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--grad);box-shadow:var(--sombra-roxa);color:#fff;margin-top:-34px;position:relative;z-index:1}
+  .painel-voz .botoes{display:flex;justify-content:center;gap:8px}
+  .painel-voz .botoes span{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#1B2044;font-size:13px}
+  .painel-voz .botoes span.sair{background:#E5484D}
+  .chamada{position:relative}
+  .chamada h2{font-size:clamp(30px,3vw,44px);margin:16px 0 14px}
+  .chamada p{color:var(--texto-2);font-size:17px;max-width:470px;margin:0 0 28px}
+  .chamada .acoes-cta{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .link-seta{color:var(--texto);font-weight:700;text-decoration:underline;text-underline-offset:5px;text-decoration-color:rgba(255,255,255,.35)}
+  .link-seta:hover{text-decoration-color:var(--roxo-2)}
+  .chamada .versao{text-align:left;margin-top:14px}
+  .chamada .aviso-win{font-size:13px;margin:16px 0 0;color:var(--texto-3)}
+  .castelo{position:absolute;right:-2%;bottom:-40px;width:min(330px,26vw);opacity:.85;pointer-events:none;z-index:0;mix-blend-mode:lighten;
+    -webkit-mask-image:radial-gradient(closest-side,#000 45%,transparent 100%);mask-image:radial-gradient(closest-side,#000 45%,transparent 100%)}
+  .chamada > *:not(.castelo){position:relative;z-index:1}
+  @media (max-width:1180px){
+    .cards-h{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .confianca{flex-wrap:wrap}
+  }
+  @media (max-width:900px){
+    .hero{margin-top:0;min-height:0}
+    .hero .container{padding-top:4px}
+    .hero .arte{position:relative;width:100%;margin-top:0}
+    .hero .arte img{-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 14%,#000 82%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 14%,#000 82%,transparent 100%)}
+    .vitrine .container{grid-template-columns:1fr}
+    .inclina .app{transform:none}
+    .castelo{display:none}
+    .topo .container,.hero .container,.cards-faixa .container,.vitrine .container{width:min(1440px,100% - 40px)}
+  }
+  @media (max-width:600px){
+    .cards-h{grid-template-columns:minmax(0,1fr)}
+    .inclina .app{grid-template-columns:52px 1fr}
+    .painel-voz{display:none}
+  }
+
   /* ===== Responsivo ===== */
   @media (max-width:1080px){
     .cards{grid-template-columns:repeat(2,1fr)}
@@ -224,6 +303,7 @@
   <div class="container">
     <a class="marca" href="./" aria-label="Avlumi — início"><img src="logo.svg" alt="" width="36" height="36" />AVLUMI</a>
     <nav class="nav" id="nav" aria-label="Principal">
+      <a class="casa" href="#conteudo" aria-label="Início" aria-current="page"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.2 2.8 11a1 1 0 0 0 1.3 1.5l.9-.8V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-8.3l.9.8a1 1 0 1 0 1.3-1.5z"/></svg></a>
       <a href="#recursos">Recursos</a>
       <a href="#seguranca">Segurança</a>
       <a href="#baixar">Baixar</a>
@@ -244,9 +324,14 @@
 <main id="conteudo">
   <!-- Hero -->
   <section class="hero">
+    <div class="arte">
+      <img src="hero.webp" srcset="hero-640.webp 640w, hero.webp 1020w" sizes="(max-width: 900px) 100vw, 61vw" width="1020" height="528"
+           alt="Personagens com headsets ao redor de uma janela da Avlumi com canais, conversa e chamada de vídeo" fetchpriority="high" />
+      <span class="legenda">Ilustração</span>
+    </div>
     <div class="container">
-      <div>
-        <span class="selo"><b></b>Grátis para começar · Navegador e Windows</span>
+      <div class="hero-txt">
+        <span class="selo"><b></b>Grátis para começar <span aria-hidden="true">•</span> Navegador e Windows</span>
         <h1><span class="linha">Sua comunidade.</span><br /><span class="grad linha">Seu mundo.</span></h1>
         <p class="sub">Converse, jogue e crie comunidades incríveis com pessoas de todo o Brasil e do mundo.</p>
         <div class="ctas">
@@ -260,56 +345,47 @@
           </a>
         </div>
         <ul class="confianca">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#9F67FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Comunidades do seu jeito</li>
-          <li><svg viewBox="0 0 24 24" fill="#FACC15" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>Voz e vídeo ao vivo</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="#3BD68A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>Privacidade sob seu controle</li>
+          <li><svg viewBox="0 0 24 24" fill="#8B7BFF" aria-hidden="true"><circle cx="9" cy="8" r="4"/><circle cx="17" cy="9" r="3"/><path d="M1.5 20c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5zM16 20c0-2.2-.7-4-2-5.3 3.8-.6 8.5 1 8.5 5.3z"/></svg>Comunidades de todo tipo</li>
+          <li><svg viewBox="0 0 24 24" fill="#FACC15" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>Conexão instantânea</li>
+          <li><svg viewBox="0 0 24 24" fill="#3BD68A" aria-hidden="true"><path d="M12 2 4 5v7c0 5.5 3.4 9 8 10 4.6-1 8-4.5 8-10V5z"/><path d="m8.5 12 2.5 2.5 4.5-5" stroke="#0B1A12" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Seguro e confiável</li>
         </ul>
       </div>
-      <div class="arte">
-        <img src="hero.webp" srcset="hero-640.webp 640w, hero.webp 1020w" sizes="(max-width: 900px) 100vw, 56vw" width="1020" height="528"
-             alt="Personagens com headsets ao redor de uma janela da Avlumi com canais, conversa e chamada de vídeo" fetchpriority="high" />
-        <span class="legenda">Ilustração</span>
+    </div>
+  </section>
+
+  <!-- Cards logo abaixo do hero -->
+  <section class="cards-faixa" id="recursos" aria-label="Recursos">
+    <div class="container">
+      <div class="cards-h">
+        <a class="card-h surge" href="https://comunidade-online.onrender.com/?explorar=1">
+          <span class="glifo"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#B794FF"/><stop offset="1" stop-color="#7C3AED"/></linearGradient></defs><circle cx="12" cy="7" r="3.6" fill="url(#g1)"/><circle cx="5" cy="9" r="2.6" fill="url(#g1)" opacity=".85"/><circle cx="19" cy="9" r="2.6" fill="url(#g1)" opacity=".85"/><path d="M5.5 20c0-3.8 2.9-6.3 6.5-6.3s6.5 2.5 6.5 6.3z" fill="url(#g1)"/><path d="M.5 19c0-2.8 1.8-4.6 4.3-4.6.9 0 1.7.2 2.3.6A7.6 7.6 0 0 0 4.6 19zM23.5 19c0-2.8-1.8-4.6-4.3-4.6-.9 0-1.7.2-2.3.6a7.6 7.6 0 0 1 2.5 4z" fill="url(#g1)" opacity=".85"/></svg></span>
+          <div><h3>Comunidades do seu jeito</h3><p>Crie ou entre em servidores sobre seus interesses: jogos, estudos, música e muito mais.</p></div>
+          <span class="seta" aria-hidden="true">→</span>
+        </a>
+        <a class="card-h surge" href="#como-funciona">
+          <span class="glifo"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5FB0FF"/><stop offset="1" stop-color="#2563EB"/></linearGradient></defs><path d="M3 14v-2a9 9 0 0 1 18 0v2" fill="none" stroke="url(#g2)" stroke-width="2.4"/><rect x="2" y="13" width="5.5" height="8" rx="2.2" fill="url(#g2)"/><rect x="16.5" y="13" width="5.5" height="8" rx="2.2" fill="url(#g2)"/></svg></span>
+          <div><h3>Voz e vídeo em tempo real</h3><p>Converse com amigos e com a sua comunidade, ligue a câmera e compartilhe a tela.</p></div>
+          <span class="seta" aria-hidden="true">→</span>
+        </a>
+        <a class="card-h surge" href="#seguranca">
+          <span class="glifo"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6CB6FF"/><stop offset="1" stop-color="#2F6BEA"/></linearGradient></defs><path d="M12 1.5 3.5 4.8v6.6c0 5.6 3.6 9.6 8.5 11.1 4.9-1.5 8.5-5.5 8.5-11.1V4.8z" fill="url(#g3)"/><circle cx="12" cy="10.2" r="2.4" fill="#0B1230"/><path d="M8.2 16.2c.7-2 2.1-3 3.8-3s3.1 1 3.8 3z" fill="#0B1230"/></svg></span>
+          <div><h3>Privacidade e controle</h3><p>Verificação em duas etapas, bloqueio, moderação completa e controle de quem entra.</p></div>
+          <span class="seta" aria-hidden="true">→</span>
+        </a>
+        <a class="card-h surge" href="#mais">
+          <span class="glifo"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C084FC"/><stop offset="1" stop-color="#7C3AED"/></linearGradient></defs><path d="M14 1 4 14h7l-1.5 9L20 9.5h-7.2z" fill="url(#g4)"/></svg></span>
+          <div><h3>Tudo em um só lugar</h3><p>Chat, voz, vídeo, compartilhamento de tela e muito mais, sem sair da plataforma.</p></div>
+          <span class="seta" aria-hidden="true">→</span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- Recursos -->
-  <section id="recursos">
+  <!-- Demonstração + chamada -->
+  <section class="vitrine" id="como-funciona">
     <div class="container">
-      <div class="titulo-secao surge">
-        <span class="etiqueta">Recursos</span>
-        <h2>Tudo pra sua galera, <span class="grad">num lugar só</span></h2>
-        <p>Do bate-papo do dia a dia às chamadas com a turma inteira.</p>
-      </div>
-      <div class="cards">
-        <article class="card surge">
-          <div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#C4A8FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-          <h3>Comunidades do seu jeito</h3>
-          <p>Crie ou entre em servidores sobre o que você curte: jogos, estudos, música e muito mais. Canais de texto, voz, fórum e palco.</p>
-        </article>
-        <article class="card surge">
-          <div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#8EC5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div>
-          <h3>Voz e vídeo em tempo real</h3>
-          <p>Entre na sala e fale na hora. Ligue a câmera, compartilhe a tela e assista vídeos do YouTube junto com a sala.</p>
-        </article>
-        <article class="card surge">
-          <div class="icone"><svg viewBox="0 0 24 24" fill="none" stroke="#7FE7B4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
-          <h3>Privacidade e controle</h3>
-          <p>Verificação em duas etapas, bloqueio de usuários, aparelhos conectados e ferramentas de moderação para cada servidor.</p>
-        </article>
-        <article class="card surge">
-          <div class="icone"><svg viewBox="0 0 24 24" fill="#B78CFF" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg></div>
-          <h3>Tudo em um só lugar</h3>
-          <p>Conversas privadas, grupos com amigos, figurinhas, enquetes, lembretes e busca — sem sair da plataforma.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- Demonstração -->
-  <section class="demo">
-    <div class="container">
-      <div class="app surge" role="img" aria-label="Exemplo da interface da Avlumi: servidores à esquerda, canais, conversa no canal geral e membros online">
+      <div class="inclina surge">
+        <div class="app" role="img" aria-label="Exemplo da interface da Avlumi: servidores à esquerda, canais, conversa no canal geral e membros online">
         <div class="app-rail" aria-hidden="true">
           <div class="srv on" style="background:linear-gradient(135deg,#7C3AED,#278BFF)">MS</div>
           <div class="srv" style="background:#E0663A">🎮</div>
@@ -340,28 +416,33 @@
           <div class="digitando"><i></i><i></i><i></i> Rafinha está digitando…</div>
           <div class="compor"><span>Mensagem em #geral</span><span>😀 ➤</span></div>
         </div>
-        <div class="app-membros" aria-hidden="true">
-          <div class="cat">ONLINE — 4</div>
-          <div class="membro"><div class="ava" style="background:#7C3AED">L</div><div>Luna<small>🎮 Jogando Minecraft</small></div></div>
-          <div class="membro"><div class="ava" style="background:#E0663A">R</div><div>Rafinha<small>Disponível</small></div></div>
-          <div class="membro"><div class="ava" style="background:#1F9FB0">D</div><div>Darkzin<small>Na chamada</small></div></div>
-          <div class="membro"><div class="ava" style="background:#D9508A">B</div><div>Bia<small>Estudando 📚</small></div></div>
+        <div class="painel-voz" aria-hidden="true">
+          <div class="tela"></div>
+          <div class="mic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+          <div class="botoes"><span>🎥</span><span>🖥️</span><span class="sair">📞</span></div>
         </div>
       </div>
-      <div class="demo-texto surge">
-        <span class="etiqueta">Como funciona</span>
+      </div>
+      <div class="chamada surge" id="baixar">
+        <img class="castelo" src="castelo.webp" alt="" width="342" height="279" loading="lazy" />
+        <span class="etiqueta">Conecte-se agora</span>
         <h2>Entre em servidores, faça amigos e <span class="grad">divirta-se!</span></h2>
-        <ul>
-          <li><span class="num">1</span><div><strong>Escolha seus servidores</strong>Crie o seu em segundos ou encontre comunidades no Explorar.</div></li>
-          <li><span class="num">2</span><div><strong>Converse nos canais</strong>Cada assunto no seu canal, com reações, tópicos, enquetes e figurinhas.</div></li>
-          <li><span class="num">3</span><div><strong>Chame a galera na voz</strong>Clique numa sala de voz e já está falando — com câmera e tela, se quiser.</div></li>
-        </ul>
+        <p>A Avlumi é o lugar perfeito para criar laços, compartilhar momentos e fazer parte de algo maior.</p>
+        <div class="acoes-cta">
+          <a class="btn btn-primario" id="baixarWin" href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest/download/Avlumi-Setup.exe">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3zM11.5 4.3 21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg>
+            Baixar para Windows
+          </a>
+          <a class="link-seta" href="https://comunidade-online.onrender.com/">Acessar pelo navegador →</a>
+        </div>
+        <div class="versao" id="versao" aria-live="polite"></div>
+        <p class="aviso-win">No primeiro download, o Windows pode mostrar um aviso azul: clique em “Mais informações” e depois em “Executar assim mesmo”.</p>
       </div>
     </div>
   </section>
 
   <!-- Mais recursos -->
-  <section>
+  <section id="mais">
     <div class="container">
       <div class="titulo-secao surge">
         <span class="etiqueta">E tem mais</span>
@@ -396,27 +477,6 @@
     </div>
   </section>
 
-  <!-- Baixar -->
-  <section class="cta-final" id="baixar">
-    <div class="container">
-      <div class="caixa surge">
-        <div>
-          <span class="etiqueta">Conecte-se agora</span>
-          <h2>Conecte-se de <span class="grad">qualquer lugar</span></h2>
-          <p>Use direto no navegador, sem instalar nada — ou baixe o app para Windows, que abre rápido, avisa das mensagens e se atualiza sozinho.</p>
-        </div>
-        <div class="ctas">
-          <a class="btn btn-primario" id="baixarWin" href="https://github.com/wallacemapdecampos-ship-it/avlumi-app/releases/latest/download/Avlumi-Setup.exe">
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3zM11.5 4.3 21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zM11.5 12.5H21V21l-9.5-1.3z"/></svg>
-            Baixar para Windows
-          </a>
-          <a class="btn btn-contorno" href="https://comunidade-online.onrender.com/">Acessar pelo navegador →</a>
-          <div class="versao" id="versao" aria-live="polite"></div>
-        </div>
-      </div>
-      <p class="aviso-win">No primeiro download, o Windows pode mostrar um aviso azul. Clique em “Mais informações” e depois em “Executar assim mesmo”.</p>
-    </div>
-  </section>
 </main>
 
 <footer class="rodape">
