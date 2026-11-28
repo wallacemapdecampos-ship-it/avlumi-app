@@ -166,6 +166,35 @@
   .rodape small{margin-left:auto;font-size:13px}
   @media (max-width:1000px){.grade{grid-template-columns:repeat(2,1fr)}.seg-wrap{grid-template-columns:1fr}}
   @media (max-width:600px){.grade,.grade-seg{grid-template-columns:1fr}.sec{padding-top:72px}.rodape small{margin-left:0}}
+
+  /* ===== Recursos (estilo limpo: uma coluna + pares) ===== */
+  .rx{max-width:1160px;margin:0 auto;padding:110px 28px 0;scroll-margin-top:70px}
+  .rx-cab{text-align:center;max-width:720px;margin:0 auto 64px}
+  .rx-kicker{display:inline-block;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#C9CAE2;font-size:13px;font-weight:700}
+  .rx-cab h2{margin:16px 0 10px;font-size:clamp(30px,3.6vw,46px);line-height:1.1;letter-spacing:-1px;font-weight:800}
+  .rx-cab p{margin:0;color:#9EA0BF;font-size:17px}
+  .rx-dest{color:#A98BFF}
+  .rx h3{margin:0 0 10px;font-size:clamp(24px,2.4vw,32px);line-height:1.15;letter-spacing:-.6px;font-weight:800}
+  .rx p{margin:0;color:#A9ABC6;font-size:16.5px;line-height:1.6}
+  .rx-img{margin:0;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 60px rgba(0,0,0,.45);background:#0E1124}
+  .rx-img img{width:100%;height:auto;display:block}
+  .rx-grande{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center;margin:0 0 110px}
+  .rx-grande.rx-inv{grid-template-columns:1.2fr .8fr}
+  .rx-grande.rx-inv .rx-txt{order:2}
+  .rx-txt p{max-width:400px}
+  .rx-par{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:0 0 110px;scroll-margin-top:70px}
+  .rx-card{display:flex;flex-direction:column;gap:0;padding:34px 34px 0;border-radius:22px;background:#0E1124;border:1px solid rgba(255,255,255,.06);overflow:hidden;scroll-margin-top:80px}
+  .rx-card p{margin-bottom:26px}
+  .rx-card .rx-img{margin-top:auto;border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom:0}
+  @media (max-width:900px){
+    .rx{padding:72px 20px 0}
+    .rx-cab{margin-bottom:40px}
+    .rx-grande,.rx-grande.rx-inv{grid-template-columns:1fr;gap:20px;margin-bottom:56px}
+    .rx-grande.rx-inv .rx-txt{order:0}
+    .rx-par{grid-template-columns:1fr;gap:20px;margin-bottom:56px}
+    .rx-card{padding:24px 22px 0;border-radius:18px}
+    .rx p{font-size:15.5px}
+  }
   @media (max-width:900px){
     :root{--u:1px}
     .palco{min-height:0;padding-bottom:40px}
@@ -292,20 +321,36 @@
   </main>
 </div>
 
-<section class="sec" id="recursos" aria-labelledby="t-rec">
-  <div class="sec-cab"><span class="kicker">Recursos</span><h2 id="t-rec">Tudo que sua comunidade precisa, <span class="grad">num lugar só</span></h2><p>Do papo do dia a dia aos grandes eventos: ferramentas reais, já disponíveis no Avlumi.</p></div>
-  <div class="grade"><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01"/></svg></span><h3>Servidores e canais</h3><p>Canais de texto, voz, fórum e palco, com categorias, cargos e permissões do seu jeito.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg></span><h3>Voz, vídeo e tela</h3><p>Chamadas em grupo com câmera, compartilhamento de tela e aperte-para-falar.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="m10 9 5 2.5-5 2.5z"/><path d="M8 21h8"/></svg></span><h3>Assistir junto e minijogos</h3><p>Vejam vídeos sincronizados na chamada e joguem minijogos sem sair da conversa.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V10l7-6 7 6v11"/><path d="M12 11v4M10 13h4"/></svg></span><h3>Palco para eventos</h3><p>Quem fala sobe ao palco, a plateia ouve e pede a vez. Ideal para aulas e lives.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M8.5 11h7M8.5 14h4"/></svg></span><h3>Mensagens completas</h3><p>Responder, encaminhar, fixar, reações, figurinhas, enquetes e prévia de links.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h8M8 3v2M5.5 5c.8 3 3 5.5 6 7M10.5 5c-.6 3-2.8 6-6 8"/><path d="m13 20 4-9 4 9M14.5 17h5"/></svg></span><h3>Tradução e busca</h3><p>Traduza mensagens com um clique e encontre tudo com filtros por autor, data e anexo.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><h3>Lembretes e aniversários</h3><p>Agende lembretes no chat e deixe o servidor parabenizar os membros no dia certo.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M7.5 8a2.5 2.5 0 1 1 4.5-1.5A2.5 2.5 0 1 1 16.5 8"/></svg></span><h3>Sorteios e boas-vindas</h3><p>Cartão de boas-vindas, sorteios automáticos e cargos por reação para novos membros.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><h3>Níveis, missões e conquistas</h3><p>XP por participação, ranking, recompensas por nível, pet virtual e loja de moedas.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg></span><h3>Conversas privadas e grupos</h3><p>Mensagens diretas, grupos privados, mensagens que somem e confirmação de leitura.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="m9 10 2 2 4-4"/></svg></span><h3>App leve para Windows</h3><p>“Jogando agora”, atalho global para mutar, aperte-para-falar e modo econômico.</p></article><article class="item"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><h3>Explorar comunidades</h3><p>Página pública do servidor, selo de verificado e convites com validade e limite.</p></article></div>
-</section>
+<section class="rx" id="recursos" aria-labelledby="t-rec">
+  <header class="rx-cab">
+    <span class="rx-kicker">Recursos</span>
+    <h2 id="t-rec">Tudo o que sua <span class="rx-dest">comunidade</span> precisa</h2>
+    <p>Recursos reais, já funcionando na Avlumi.</p>
+  </header>
 
-<section class="sec sec-seg" id="seguranca" aria-labelledby="t-seg">
-  <div class="seg-wrap">
-    <div class="seg-txt">
-      <span class="kicker">Segurança</span>
-      <h2 id="t-seg">Sua conta e sua comunidade <span class="grad">protegidas</span></h2>
-      <p>Controle de verdade sobre quem entra, quem fala e o que acontece no seu servidor, e sobre a sua própria conta.</p>
-      <div class="escudo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg><div><b>Acesso protegido no banco de dados</b><span>Cada pessoa só lê o que tem permissão de ver, mesmo fora do app.</span></div></div>
-    </div>
-    <div class="grade grade-seg"><article class="item item-p"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></span><h3>Verificação em duas etapas</h3><p>Proteja a conta com código de um app autenticador além da senha.</p></article><article class="item item-p"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 6h4M12 18h.01"/></svg></span><h3>Dispositivos conectados</h3><p>Veja onde sua conta está aberta e encerre sessões com um clique.</p></article><article class="item item-p"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg></span><h3>Bloquear usuários</h3><p>Quem você bloqueia não te manda mensagem nem aparece pra você.</p></article><article class="item item-p"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg></span><h3>Denúncias</h3><p>Denuncie mensagens e a moderação analisa em um painel próprio.</p></article><article class="item item-p"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></span><h3>Histórico de moderação</h3><p>Tudo fica registrado: cargos, canais, convites e ações dos moderadores.</p></article><article class="item item-p"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/></svg></span><h3>Cargos e permissões</h3><p>Defina quem pode ver, falar, moderar ou administrar cada canal.</p></article><article class="item item-p"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span><h3>Convites sob controle</h3><p>Crie convites que expiram ou têm limite de usos, e revogue quando quiser.</p></article><article class="item item-p"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg></span><h3>Seus dados são seus</h3><p>Baixe uma cópia completa dos seus dados quando quiser.</p></article></div>
+  <article class="rx-grande">
+    <div class="rx-txt"><h3>Sua galera, <span class="rx-dest">num lugar só</span></h3><p>Crie servidores com canais de texto e voz, fórum e palco, cargos e permissões.</p></div>
+    <figure class="rx-img"><img src="img/rec-servidor.webp" alt="Servidor da Avlumi com canais de texto e voz" loading="lazy" decoding="async" /></figure>
+  </article>
+
+  <div class="rx-par">
+    <article class="rx-card"><h3>Conversa com <span class="rx-dest">mais vida</span></h3><p>Reações, figurinhas, emojis do servidor, enquetes, sons, mensagens que somem e tradução.</p><figure class="rx-img"><img src="img/rec-conversa.webp" alt="Mensagem com reações e enquete" loading="lazy" decoding="async" /></figure></article>
+    <article class="rx-card"><h3>Entre e saia <span class="rx-dest">quando quiser</span></h3><p>Salas de voz abertas, sem precisar ligar. Quem fala acende em verde.</p><figure class="rx-img"><img src="img/rec-voz.webp" alt="Sala de voz com quem está falando" loading="lazy" decoding="async" /></figure></article>
+  </div>
+
+  <article class="rx-grande rx-inv">
+    <div class="rx-txt"><h3>Como se estivessem <span class="rx-dest">na mesma sala</span></h3><p>Voz, vídeo e tela compartilhada em até 1080p 60 FPS no Lumen. Assista ao YouTube junto e jogue minijogos na chamada.</p></div>
+    <figure class="rx-img"><img src="img/rec-chamada.webp" alt="Chamada de vídeo com quatro pessoas" loading="lazy" decoding="async" /></figure>
+  </article>
+
+  <div class="rx-par">
+    <article class="rx-card"><h3>Veja quem está <span class="rx-dest">por aí</span></h3><p>Quem está online, o que está jogando (pelo app de Windows) e o status da galera.</p><figure class="rx-img"><img src="img/rec-ativo.webp" alt="Painel Ativo agora com amigos jogando" loading="lazy" decoding="async" /></figure></article>
+    <article class="rx-card"><h3>Sempre tem <span class="rx-dest">algo pra fazer</span></h3><p>Missões do dia, conquistas, ranking, pet virtual, loja de moedas e sorteios.</p><figure class="rx-img"><img src="img/rec-missoes.webp" alt="Missões do dia e pet virtual" loading="lazy" decoding="async" /></figure></article>
+  </div>
+
+  <div class="rx-par">
+    <article class="rx-card" id="seguranca"><h3>Segura <span class="rx-dest">de verdade</span></h3><p>Verificação em duas etapas, aparelhos conectados, bloqueio, denúncias e histórico de moderação.</p><figure class="rx-img"><img src="img/rec-seguranca.webp" alt="Configurações de segurança da conta" loading="lazy" decoding="async" /></figure></article>
+    <article class="rx-card"><h3>No PC e <span class="rx-dest">no celular</span></h3><p>App leve para Windows, com modo econômico e atalhos, ou direto no navegador do celular.</p><figure class="rx-img"><img src="img/rec-aparelhos.webp" alt="Avlumi no computador e no celular" loading="lazy" decoding="async" /></figure></article>
   </div>
 </section>
 
